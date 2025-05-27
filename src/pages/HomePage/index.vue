@@ -6,14 +6,9 @@
                 <!-- Logo区域 -->
                 <div class="flex items-center">
                     <el-icon class="mr-2"><Document /></el-icon>
-                    <span>Auto Form</span>
+                    <span>yiqiu-form</span>
                 </div>
 
-                <!-- 导航链接和按钮 -->
-                <div class="flex items-center space-x-4">
-                    <el-button text>登录</el-button>
-                    <el-button type="primary" class="!bg-[#409eff]">注册</el-button>
-                </div>
             </div>
         </div>
 
@@ -26,7 +21,7 @@
                 <p class="text-lg sm:text-xl text-gray-600 mb-8">
                     拖拽式表单设计，让表单制作更简单。无需编码，即可创建完美的表单。
                 </p>
-                <el-button type="primary" class="!bg-black !rounded-md !h-10 !px-6 hover:!bg-gray-800">
+                <el-button @click="goLoginPage" type="primary" class="!bg-black !rounded-md !h-10 !px-6 hover:!bg-gray-800">
                     免费使用
                 </el-button>
             </div>
@@ -66,6 +61,12 @@
 
 <script setup lang="ts">
 import { Document, Pointer, DataLine } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const goLoginPage = () => {
+    router.push('/login')
+}
 </script>
 
 <style lang="scss" scoped>

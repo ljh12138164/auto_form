@@ -1,6 +1,6 @@
 <template>
     <div>
-        HomeAbout
+        login
     </div>
 </template>
 
