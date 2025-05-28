@@ -67,6 +67,7 @@
                         {{ isLogin ? '登录' : '注册' }}
                     </el-button>
                 </el-form-item>
+                <el-button @click="logout" type="primary">退出</el-button>
             </el-form>
 
             <!-- 切换登录/注册 -->
@@ -88,10 +89,13 @@ import { ref, reactive } from 'vue'
 import { User, Lock, Message } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import {useUserStore} from '@/stores/modules/user'
+import { postLogoutAPI } from '@/api'
 const userStore = useUserStore()
 // 表单引用
 const formRef = ref<FormInstance>()
-
+const logout = async() => {
+   await  postLogoutAPI()
+}
 // 登录状态
 const isLogin = ref(true)
 

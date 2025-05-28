@@ -43,9 +43,8 @@ const refreshToken = async (): Promise<string> => {
     const response = await axios.post('/api/refresh-token', {}, {
       withCredentials: true // 确保携带 HttpOnly Cookie 中的 refreshToken
     })
-    
     // 从响应中提取新的 accessToken
-    const { accessToken } = response.data
+    const { accessToken } = response.data.data
     
     // 直接更新 localStorage 中的 accessToken
     // refreshToken 作为 HttpOnly Cookie 由后端管理，前端无需处理
