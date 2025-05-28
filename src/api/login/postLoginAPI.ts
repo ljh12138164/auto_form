@@ -3,7 +3,10 @@ export type TLoginForm = {
   username: string
   password: string
 }
+interface TLoginResponse {
+  accessToken: string
+}
 const postLoginAPI = (data:TLoginForm) => {
-    post("/login",data)
+   return post<TLoginResponse>("/login",data)
 }
 export default postLoginAPI

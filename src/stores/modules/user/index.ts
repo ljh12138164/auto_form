@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { getAccessToken, getRefreshToken, setTokens, clearTokens } from "@/utils/token";
+import { getAccessToken, setAccessToken, clearTokens } from "@/utils/token";
 import { Login, TLoginForm } from "@/api";
 
 // 用户信息接口
@@ -16,9 +16,8 @@ export const useUserStore = defineStore("user", () => {
   const userInfo = ref<UserInfo | null>(null);
   const name = ref("");
   
-  // token状态
+  // token状态（只管理accessToken，refreshToken在HttpOnly Cookie中）
   const accessToken = ref(getAccessToken());
-  const refreshToken = ref(getRefreshToken());
   
   // 计算属性
   const isLoggedIn = computed(() => {
@@ -35,61 +34,61 @@ export const useUserStore = defineStore("user", () => {
     name.value = info.username;
   };
   
-  // 设置tokens
-  const setUserTokens = (access: string, refresh: string) => {
-    accessToken.value = access;
-    refreshToken.value = refresh;
-    setTokens(access, refresh);
-  };
-  
-  // 更新访问令牌
+  // 更新访问令牌（refreshToken由后端通过HttpOnly Cookie管理）
   const updateAccessToken = (token: string) => {
     accessToken.value = token;
+    setAccessToken(token);
   };
   
   // 登录方法
   const login = async (loginData: TLoginForm) => {
     try {
-      // 这里应该调用登录API
-      // const response = await loginApi(loginData);
-      const res =await Login(loginData)
-      console.log(res);
+      const res = await Login(loginData);
+        const token = res?.data?.accessToken!;
+        console.log(res)
+      // 假设后端返回的数据结构
+      if (res.data) {
+        
+        // 设置accessToken（refreshToken已经通过Set-Cookie头设置到HttpOnly Cookie）
+        updateAccessToken(token);
+        
+        // 设置用户信息
+        // if (user) {
+        //   setUserInfo(user);
+        // }
+        
+        return { success: true, message: "登录成功" };
+      }
       
-      // 模拟登录响应
-      
-    //   // 设置tokens
-    //   setUserTokens(res.accessToken, res.refreshToken);
-      
-    //   // 设置用户信息
-    //   setUserInfo(mockResponse.userInfo);
-      
-    //   return { success: true, message: "登录成功" };
+      return { success: false, message: "登录失败" };
     } catch (error) {
-    //   console.error("登录失败:", error);
-    //   return { success: false, message: "登录失败" };
+      console.error("登录失败:", error);
+      return { success: false, message: "登录失败" };
     }
   };
   
   // 登出方法
-  const logout = () => {
-    // 清除用户信息
-    userInfo.value = null;
-    name.value = "";
-    
-    // 清除tokens
-    accessToken.value = "";
-    refreshToken.value = "";
-    clearTokens();
+  const logout = async () => {
+    try {
+      // 调用后端登出接口清除HttpOnly Cookie
+      // await request.post('/api/logout');
+    } catch (error) {
+      console.error("登出接口调用失败:", error);
+    } finally {
+      // 无论接口是否成功，都清除本地状态
+      userInfo.value = null;
+      name.value = "";
+      accessToken.value = "";
+      clearTokens();
+    }
   };
   
-  // 检查认证状态
+  // 检查认证状态（只检查accessToken，refreshToken无法从前端检查）
   const checkAuthStatus = () => {
     const token = getAccessToken();
-    const refresh = getRefreshToken();
     
-    if (token && refresh) {
+    if (token) {
       accessToken.value = token;
-      refreshToken.value = refresh;
       return true;
     }
     
@@ -101,15 +100,13 @@ export const useUserStore = defineStore("user", () => {
     userInfo,
     name,
     accessToken,
-    refreshToken,
     
     // 计算属性
     isLoggedIn,
     username,
     
-    // 登录相关方法
+    // 方法
     setUserInfo,
-    setUserTokens,
     updateAccessToken,
     login,
     logout,
