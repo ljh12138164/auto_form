@@ -4,6 +4,6 @@ export type TLoginForm = {
   password: string
 }
 const postLoginAPI = (data:TLoginForm) => {
-    post("/api/login",data)
+    post("/login",data)
 }
 export default postLoginAPI

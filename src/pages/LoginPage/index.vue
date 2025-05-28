@@ -87,7 +87,8 @@
 import { ref, reactive } from 'vue'
 import { User, Lock, Message } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
-
+import {useUserStore} from '@/stores/modules/user'
+const userStore = useUserStore()
 // 表单引用
 const formRef = ref<FormInstance>()
 
@@ -144,6 +145,7 @@ const handleSubmit = async () => {
     await formRef.value.validate((valid, fields) => {
         if (valid) {
             // 表单验证通过，这里处理登录或注册逻辑
+            userStore.login(formData)
             console.log('表单验证通过', formData)
         } else {
             console.log('表单验证失败', fields)

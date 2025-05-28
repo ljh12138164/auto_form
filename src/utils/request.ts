@@ -1,7 +1,7 @@
 import axios from 'axios'
 //引入基础的路径
 const request = axios.create({
-  baseURL: "http://localhost:8080/api/v1",
+  baseURL: "/api",
   timeout: 5000
 })
 request.interceptors.request.use((config) => {
