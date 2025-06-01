@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { getAccessToken, setAccessToken, clearTokens } from "@/utils/token";
-import { Login, TLoginForm } from "@/api";
+import { Login, postLogoutAPI, TLoginForm } from "@/api";
 
 // 用户信息接口
 interface UserInfo {
@@ -15,63 +15,55 @@ export const useUserStore = defineStore("user", () => {
   // 用户基本信息
   const userInfo = ref<UserInfo | null>(null);
   const name = ref("");
-  
+
   // token状态（只管理accessToken，refreshToken在HttpOnly Cookie中）
-  const accessToken = ref(getAccessToken());
-  
+  const accessToken = ref(getAccessToken() || "");
+
   // 计算属性
   const isLoggedIn = computed(() => {
     return !!accessToken.value && !!userInfo.value;
   });
-  
+
   const username = computed(() => {
     return userInfo.value?.username || name.value || "";
   });
-  
+
   // 设置用户信息
   const setUserInfo = (info: UserInfo) => {
     userInfo.value = info;
     name.value = info.username;
   };
-  
+
   // 更新访问令牌（refreshToken由后端通过HttpOnly Cookie管理）
   const updateAccessToken = (token: string) => {
     accessToken.value = token;
     setAccessToken(token);
   };
-  
+
   // 登录方法
   const login = async (loginData: TLoginForm) => {
     try {
       const res = await Login(loginData);
-        const token = res?.data?.accessToken!;
-        console.log(res)
       // 假设后端返回的数据结构
       if (res.data) {
-        
+        const token = res?.data?.accessToken!;
         // 设置accessToken（refreshToken已经通过Set-Cookie头设置到HttpOnly Cookie）
         updateAccessToken(token);
-        
         // 设置用户信息
         // if (user) {
         //   setUserInfo(user);
         // }
-        
-        return { success: true, message: "登录成功" };
       }
-      
-      return { success: false, message: "登录失败" };
     } catch (error) {
-      console.error("登录失败:", error);
-      return { success: false, message: "登录失败" };
+      console.error("登录接口调用失败:", error);
     }
   };
-  
+
   // 登出方法
   const logout = async () => {
     try {
       // 调用后端登出接口清除HttpOnly Cookie
-      // await request.post('/api/logout');
+      await postLogoutAPI();
     } catch (error) {
       console.error("登出接口调用失败:", error);
     } finally {
@@ -82,34 +74,22 @@ export const useUserStore = defineStore("user", () => {
       clearTokens();
     }
   };
-  
-  // 检查认证状态（只检查accessToken，refreshToken无法从前端检查）
-  const checkAuthStatus = () => {
-    const token = getAccessToken();
-    
-    if (token) {
-      accessToken.value = token;
-      return true;
-    }
-    
-    return false;
-  };
-  
+
+
   return {
     // 状态
     userInfo,
     name,
     accessToken,
-    
+
     // 计算属性
     isLoggedIn,
     username,
-    
+
     // 方法
     setUserInfo,
     updateAccessToken,
     login,
     logout,
-    checkAuthStatus
   };
 });

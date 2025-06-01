@@ -67,7 +67,6 @@
                         {{ isLogin ? '登录' : '注册' }}
                     </el-button>
                 </el-form-item>
-                <el-button @click="logout" type="primary">退出</el-button>
             </el-form>
 
             <!-- 切换登录/注册 -->
@@ -90,6 +89,7 @@ import { User, Lock, Message } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import {useUserStore} from '@/stores/modules/user'
 import { postLogoutAPI } from '@/api'
+import { notification } from '@/utils'
 const userStore = useUserStore()
 // 表单引用
 const formRef = ref<FormInstance>()
@@ -150,6 +150,7 @@ const handleSubmit = async () => {
         if (valid) {
             // 表单验证通过，这里处理登录或注册逻辑
             userStore.login(formData)
+            notification('登录成功', '欢迎回来', 'success')
             console.log('表单验证通过', formData)
         } else {
             console.log('表单验证失败', fields)

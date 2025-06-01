@@ -23,6 +23,8 @@ router.beforeEach(async (to, from, next) => {
 
   // 虚拟加载进度-开始
   NProgress.start();
+  // 检查是否登录
+  // const hasToken = hasToken();
 
   // to: 即将要进入的目标
   // from: 当前导航正要离开的路由

@@ -91,6 +91,7 @@ request.interceptors.response.use(
   async (error) => {
     // 获取原始请求配置
     const originalRequest = error.config
+    console.log(error);
     
     // 检查是否为 401 未授权错误，且不是重试请求，且不是刷新 token 的请求
     if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url?.includes('refresh-token')) {
