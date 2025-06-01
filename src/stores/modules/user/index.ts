@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { getAccessToken, setAccessToken, clearTokens } from "@/utils/token";
 import { Login, postLogoutAPI, TLoginForm } from "@/api";
+import { notification } from "@/utils";
 
 // 用户信息接口
 interface UserInfo {
@@ -44,21 +45,15 @@ export const useUserStore = defineStore("user", () => {
   const login = async (loginData: TLoginForm) => {
     try {
       const res = await Login(loginData);
-      // 假设后端返回的数据结构
       if (res.data) {
         const token = res?.data?.accessToken!;
-        // 设置accessToken（refreshToken已经通过Set-Cookie头设置到HttpOnly Cookie）
         updateAccessToken(token);
-        // 设置用户信息
-        // if (user) {
-        //   setUserInfo(user);
-        // }
+        notification('登录成功',res.message,'success')
       }
-    } catch (error) {
-      console.error("登录接口调用失败:", error);
+    } catch (error:any) {
+      notification('登录失败',error.message,'error')
     }
   };
-
   // 登出方法
   const logout = async () => {
     try {

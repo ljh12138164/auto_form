@@ -86,13 +86,11 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   (response) => {
     // 响应成功时直接返回响应数据
-    return response.data
+    return response
   },
   async (error) => {
     // 获取原始请求配置
     const originalRequest = error.config
-    console.log(error);
-    
     // 检查是否为 401 未授权错误，且不是重试请求，且不是刷新 token 的请求
     if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url?.includes('refresh-token')) {
       // 如果当前正在刷新 token，将请求加入等待队列
@@ -137,7 +135,7 @@ request.interceptors.response.use(
     }
     
     // 对于非 401 错误或其他情况，直接拒绝请求
-    return Promise.reject(error)
+    return Promise.reject(error.response?.data || error.message)
   }
 )
 

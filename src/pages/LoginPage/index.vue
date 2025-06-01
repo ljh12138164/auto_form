@@ -78,6 +78,7 @@
                 >
                     {{ isLogin ? '没有账号？立即注册' : '已有账号？立即登录' }}
                 </el-button>
+                <el-button @click="logout" type="primary">退出</el-button>
             </div>
         </div>
     </div>
@@ -94,6 +95,8 @@ const userStore = useUserStore()
 // 表单引用
 const formRef = ref<FormInstance>()
 const logout = async() => {
+    console.log(111);
+    
    await  postLogoutAPI()
 }
 // 登录状态
@@ -101,8 +104,8 @@ const isLogin = ref(true)
 
 // 表单数据
 const formData = reactive({
-    username: '',
-    password: '',
+    username: 'admin',
+    password: '123456',
     confirmPassword: '',
     email: ''
 })
@@ -150,10 +153,9 @@ const handleSubmit = async () => {
         if (valid) {
             // 表单验证通过，这里处理登录或注册逻辑
             userStore.login(formData)
-            notification('登录成功', '欢迎回来', 'success')
             console.log('表单验证通过', formData)
         } else {
-            console.log('表单验证失败', fields)
+
         }
     })
 }
