@@ -87,7 +87,7 @@ import { ref, reactive } from "vue";
 import { User, Lock, Message } from "@element-plus/icons-vue";
 import type { FormInstance, FormRules } from "element-plus";
 import { useUserStore } from "@/stores/modules/user";
-import { postLogoutAPI, postRegisterAPI } from "@/api";
+import { postRegisterAPI } from "@/api";
 import { notification } from "@/utils";
 import { useRouter } from "vue-router";
 const isLoading = ref(false);

@@ -59,6 +59,7 @@ export const useUserStore = defineStore("user", () => {
     try {
       // 调用后端登出接口清除HttpOnly Cookie
       await postLogoutAPI();
+    notification("退出成功", "", "success");
     } catch (error) {
       console.error("登出接口调用失败:", error);
     } finally {

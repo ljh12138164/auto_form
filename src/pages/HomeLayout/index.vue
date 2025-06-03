@@ -6,20 +6,14 @@
 </template>
 
 <script setup lang="ts">
-import { postLogoutAPI } from "@/api";
-import { clearTokens, notification } from "@/utils";
+import { useUserStore } from "@/stores/modules/user";
 import { useRouter } from "vue-router";
+const userStore = useUserStore()
 const router = useRouter();
 const logout = async () => {
-  try {
-    await postLogoutAPI();
-    clearTokens();
-    notification("退出成功", "", "success");
-    router.push("/login");
-  } catch (error) {
-    console.log(error);
-    notification("退出失败", "", "error");
-  }
+  await userStore.logout();
+  router.push("/login");
+
 };
 </script>
 
