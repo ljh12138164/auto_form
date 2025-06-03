@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import {
   House,
   Edit,
@@ -33,8 +33,9 @@ import {
   DataAnalysis,
   Download,
 } from '@element-plus/icons-vue'
-import {useRouter} from 'vue-router'
+import {useRouter,useRoute} from 'vue-router'
 const router = useRouter()
+const route = useRoute()
 // 菜单项数据 - 针对表单设计后台系统
 const menuItems = ref([
   {
@@ -82,16 +83,28 @@ const menuItems = ref([
 ])
 
 // 当前激活的菜单项
-const activeIndex = ref('1')
+const activeIndex = computed(() => {
+  // 获取当前路由的子路径部分
+  let currentPath = route.path
+  
+  // 如果是 /home 根路径，默认为 dashboard
+  if (currentPath === '/home') {
+    currentPath = '/dashboard'
+  } else if (currentPath.startsWith('/home/')) {
+    // 提取 /home/ 后面的部分
+    currentPath = currentPath.replace('/home', '')
+  }
+  
+  return menuItems.value.find(item => item.path === currentPath)?.index
+})
 
 // 菜单选择处理
 const handleSelect = (index: string) => {
-  activeIndex.value = index
   const selectedItem = menuItems.value.find(item => item.index === index)
   if (selectedItem) {
     console.log('选中菜单:', selectedItem.title, selectedItem.path)
     // 这里可以添加路由跳转逻辑
-    router.push(selectedItem.path)
+    router.push("/home"+selectedItem.path)
   }
 }
 </script>

@@ -3,6 +3,7 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { getAccessToken } from "@/utils";
+
 const routes = [
   {
     path: "/",
@@ -18,14 +19,51 @@ const routes = [
     path: "/home",
     name: "Home",
     component: () => import("@/pages/HomeLayout/index.vue"),
+    children: [
+      {
+        path: "",
+        name: "Dashboard",
+        component: () => import("@/pages/HomeLayout/pages/Dashboard/index.vue"),
+      },
+      {
+        path: "dashboard",
+        name: "DashboardPage",
+        component: () => import("@/pages/HomeLayout/pages/Dashboard/index.vue"),
+      },
+      {
+        path: "form-designer",
+        name: "FormDesigner",
+        component: () => import("@/pages/HomeLayout/pages/FormDesigner/index.vue"),
+      },
+      {
+        path: "form-management",
+        name: "FormManagement",
+        component: () => import("@/pages/HomeLayout/pages/FormManagement/index.vue"),
+      },
+      {
+        path: "template-center",
+        name: "TemplateCenter",
+        component: () => import("@/pages/HomeLayout/pages/TemplateCenter/index.vue"),
+      },
+      {
+        path: "data-management",
+        name: "DataManagement",
+        component: () => import("@/pages/HomeLayout/pages/DataManagement/index.vue"),
+      },
+      {
+        path: "code-generator",
+        name: "CodeGenerator",
+        component: () => import("@/pages/HomeLayout/pages/CodeGenerator/index.vue"),
+      }
+    ]
   },
   {
     path: "/404",
     name: "NotFound",
-    component: () => import("@/pages/NotFound/index.vue"), // 需要创建404页面
+    component: () => import("@/pages/NotFound/index.vue"),
   },
   {
-    path: "/:pathMatch(.*)*", // Vue 3 的通配符路由
+    path: "/:pathMatch(.*)*",
     redirect: "/404",
   },
 ];
