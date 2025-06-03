@@ -60,6 +60,11 @@ export const useUserStore = defineStore("user", () => {
     // 方法
     updateAccessToken,
     login,
-    logout,
+    logout
   };
+}, {
+  persist: {
+    key: 'user-store',
+    storage: localStorage
+  }
 });
