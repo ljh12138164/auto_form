@@ -2,20 +2,26 @@ import { createRouter, createWebHashHistory } from "vue-router";
 // @ts-ignore
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
+const routes =  [
+  {
+    path: "/",
+    name: "Index",
+    component: () => import("@/pages/HomePage/index.vue"),
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import("@/pages/LoginPage/index.vue"),
+  },
+  {
+    path: "/home",
+    name: "Home",
+    component: () => import("@/pages/HomeLayout/index.vue"),
+  }
+]
 const router = createRouter({
   history: createWebHashHistory(),
-  routes: [
-    {
-      path: "/",
-      name: "Home",
-      component: () => import("@/pages/HomePage/index.vue"),
-    },
-    {
-      path: "/login",
-      name: "Login",
-      component: () => import("@/pages/LoginPage/index.vue"),
-    },
-  ],
+  routes
 });
 
 router.beforeEach(async (to, from, next) => {

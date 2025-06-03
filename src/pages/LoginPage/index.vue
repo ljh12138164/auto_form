@@ -90,8 +90,10 @@ import type { FormInstance, FormRules } from "element-plus";
 import { useUserStore } from "@/stores/modules/user";
 import { postLogoutAPI, postRegisterAPI } from "@/api";
 import { notification } from "@/utils";
+import { useRouter } from "vue-router";
 const isLoading = ref(false);
 const userStore = useUserStore();
+const router = useRouter();
 // 表单引用
 const formRef = ref<FormInstance>();
 const loginTitle = ref("登录");
@@ -162,6 +164,7 @@ const handleSubmit = async () => {
           isLoading.value = true;
           loginTitle.value = "登录中...";
           await userStore.login(formData);
+          router.push("/home");
         } finally {
           isLoading.value = false;
           loginTitle.value = "登录";
