@@ -5,7 +5,7 @@
             <div class="container mx-auto px-4 flex justify-between items-center h-16">
                 <!-- Logo区域 -->
                 <div class="flex items-center">
-                    <el-icon class="mr-2"><Document /></el-icon>
+                    <img width="28" src="@/assets/img/jianada.png" alt="">
                     <span>yiqiu-form</span>
                 </div>
 
