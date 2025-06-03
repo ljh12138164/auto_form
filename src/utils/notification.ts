@@ -11,6 +11,6 @@ export const notification = (title: string, message: string, type: IType) => {
     title: title,
     message: message,
     type: type,
-    duration: 2000,
+    duration: 1000,
   });
 };

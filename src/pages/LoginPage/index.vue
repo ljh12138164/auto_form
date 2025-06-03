@@ -77,7 +77,6 @@
         <el-button link type="primary" @click="toggleLoginState">
           {{ isLogin ? "没有账号？立即注册" : "已有账号？立即登录" }}
         </el-button>
-        <el-button @click="logout" type="primary">退出</el-button>
       </div>
     </div>
   </div>
@@ -100,9 +99,7 @@ const loginTitle = ref("登录");
 const registerTitle = ref("注册");
 // 登录状态
 const isLogin = ref(true);
-const logout = async () => {
-  await postLogoutAPI();
-};
+
 
 // 表单数据
 const formData = reactive({
