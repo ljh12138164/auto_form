@@ -19,15 +19,15 @@ const routes = [
     name: "Home",
     component: () => import("@/pages/HomeLayout/index.vue"),
   },
-  // {
-  //   path: "/404",
-  //   name: "NotFound",
-  //   component: () => import("@/pages/404/index.vue"), // 需要创建404页面
-  // },
-  // {
-  //   path: "/:pathMatch(.*)*", // Vue 3 的通配符路由
-  //   redirect: "/404",
-  // },
+  {
+    path: "/404",
+    name: "NotFound",
+    component: () => import("@/pages/NotFound/index.vue"), // 需要创建404页面
+  },
+  {
+    path: "/:pathMatch(.*)*", // Vue 3 的通配符路由
+    redirect: "/404",
+  },
 ];
 const router = createRouter({
   history: createWebHashHistory(),
