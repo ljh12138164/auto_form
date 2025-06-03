@@ -9,11 +9,12 @@
           <BaseMenu></BaseMenu>
           <div class="p-4 border-t border-gray-200">
             <div class="bg-blue-50 rounded-lg p-3">
-              <div class="flex items-center space-x-2">
-                <span class="text-sm bg-gray-50">用户名：</span>
+              <div class="flex text-sm items-center space-x-2">
+                用户名：
+                <span class="text-sm bg-gray-50">{{ userStore.userInfo?.username }}</span>
               </div>
-              <div class="mt-2 text-sm">
-                邮箱：
+              <div class="mt-2 text-sm whitespace-nowrap overflow-hidden text-ellipsis">
+                邮箱：<span :title="userStore.userInfo?.email">{{ userStore.userInfo?.email }}</span>
               </div>
             </div>
           </div>

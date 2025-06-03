@@ -9,32 +9,13 @@ interface UserInfo {
   id: string;
   username: string;
   email: string;
-  avatar?: string;
 }
 
 export const useUserStore = defineStore("user", () => {
   // 用户基本信息
   const userInfo = ref<UserInfo | null>(null);
-  const name = ref("");
-
   // token状态（只管理accessToken，refreshToken在HttpOnly Cookie中）
   const accessToken = ref(getAccessToken() || "");
-
-  // 计算属性
-  const isLoggedIn = computed(() => {
-    return !!accessToken.value && !!userInfo.value;
-  });
-
-  const username = computed(() => {
-    return userInfo.value?.username || name.value || "";
-  });
-
-  // 设置用户信息
-  const setUserInfo = (info: UserInfo) => {
-    userInfo.value = info;
-    name.value = info.username;
-  };
-
   // 更新访问令牌（refreshToken由后端通过HttpOnly Cookie管理）
   const updateAccessToken = (token: string) => {
     accessToken.value = token;
@@ -48,6 +29,7 @@ export const useUserStore = defineStore("user", () => {
       if (res.data) {
         const token = res?.data?.accessToken!;
         updateAccessToken(token);
+        userInfo.value = res.data.userInfo
         notification('登录成功',res.message,'success')
       }
     } catch (error:any) {
@@ -65,7 +47,6 @@ export const useUserStore = defineStore("user", () => {
     } finally {
       // 无论接口是否成功，都清除本地状态
       userInfo.value = null;
-      name.value = "";
       accessToken.value = "";
       clearTokens();
     }
@@ -75,15 +56,8 @@ export const useUserStore = defineStore("user", () => {
   return {
     // 状态
     userInfo,
-    name,
     accessToken,
-
-    // 计算属性
-    isLoggedIn,
-    username,
-
     // 方法
-    setUserInfo,
     updateAccessToken,
     login,
     logout,

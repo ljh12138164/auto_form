@@ -45,8 +45,6 @@ const refreshToken = async (): Promise<string> => {
     })
     // 从响应中提取新的 accessToken
     const { accessToken } = response.data.data
-    
-    // 直接更新 localStorage 中的 accessToken
     // refreshToken 作为 HttpOnly Cookie 由后端管理，前端无需处理
     setAccessToken(accessToken)
     

@@ -5,6 +5,11 @@ export type TLoginForm = {
 }
 interface TLoginResponse {
   accessToken: string
+  userInfo: {
+    id: string
+    username: string
+    email: string
+  }
 }
 const postLoginAPI = (data:TLoginForm) => {
    return post<TLoginResponse>("/login",data)
