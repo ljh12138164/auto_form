@@ -32,7 +32,7 @@ const router = useRouter();
 
 const logout = async () => {
   await userStore.logout();
-  router.push("/login");
+  router.replace("/login");
 };
 </script>
 

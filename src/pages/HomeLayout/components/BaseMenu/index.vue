@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import {
   House,
   Edit,
@@ -89,15 +89,24 @@ const activeIndex = computed(() => {
   
   // 如果是 /home 根路径，默认为 dashboard
   if (currentPath === '/home') {
+    console.log("当前路径是 /home");
+    
     currentPath = '/dashboard'
+    console.log("修改后的路径是：",currentPath);
+    
   } else if (currentPath.startsWith('/home/')) {
     // 提取 /home/ 后面的部分
     currentPath = currentPath.replace('/home', '')
   }
+  console.log(menuItems.value.find(item => item.path === currentPath)?.index);
   
   return menuItems.value.find(item => item.path === currentPath)?.index
 })
-
+onMounted(()=>{
+  if(route.path==='/home'){
+    router.replace("/home/dashboard")
+  }
+})
 // 菜单选择处理
 const handleSelect = (index: string) => {
   const selectedItem = menuItems.value.find(item => item.index === index)
