@@ -33,7 +33,7 @@
                     </div>
                     <div>
                         <h3 class="text-2xl font-bold text-gray-900">{{ myFormViews }}</h3>
-                        <p class="text-gray-600 text-sm">我的表单访问量</p>
+                        <p class="text-gray-600 text-sm">表单总提交次数</p>
                     </div>
                 </div>
             </div>
@@ -132,24 +132,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
+import { getDashboardStatsAPI } from '@/api'
 import {
+    DataAnalysis,
     Document,
     Edit,
-    View,
-    Plus,
     Files,
-    DataAnalysis,
-    Folder
+    Folder,
+    Plus,
+    View
 } from '@element-plus/icons-vue'
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import ChartContent from './components/ChartContent/index.vue'
 const router = useRouter()
 
 // 个人统计数据
-const myForms = ref(12) // 我的表单总数
-const todayCreated = ref(2) // 今日新建
-const myFormViews = ref(156) // 我的表单总访问量
+const myForms = ref(0) // 我的表单总数
+const todayCreated = ref(0) // 今日新建
+const myFormViews = ref(0) // 我的表单总提交次数
 
 // 最近活动数据（只显示当前用户的活动）
 const recentActivities = ref([
@@ -208,12 +209,16 @@ const viewMyForms = () => {
 
 // 加载用户仪表盘数据的占位函数
 const loadUserDashboardData = async () => {
+    const res = await getDashboardStatsAPI()
+    console.log(res.data);
+    myForms.value = res.data.myForms;
+    todayCreated.value = res.data.todaySubmissions;
+    myFormViews.value = res.data.totalSubmissions;
     // 这里将来会调用API获取用户的个人数据
     console.log('加载用户仪表盘数据...')
 }
 
 onMounted(async () => {
-    await nextTick()
     loadUserDashboardData()
 })
 </script>
