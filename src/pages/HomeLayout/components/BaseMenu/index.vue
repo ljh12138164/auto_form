@@ -98,8 +98,6 @@ const activeIndex = computed(() => {
     // 提取 /home/ 后面的部分
     currentPath = currentPath.replace('/home', '')
   }
-  console.log(menuItems.value.find(item => item.path === currentPath)?.index);
-  
   return menuItems.value.find(item => item.path === currentPath)?.index
 })
 onMounted(()=>{
