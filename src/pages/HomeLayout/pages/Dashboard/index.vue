@@ -29,7 +29,7 @@
           </div>
           <div>
             <h3 class="text-2xl font-bold text-gray-900">{{ todayCreated }}</h3>
-            <p class="text-gray-600 text-sm">今日新建</p>
+            <p class="text-gray-600 text-sm">今日提交</p>
           </div>
         </div>
       </div>
@@ -70,7 +70,7 @@
                     range-separator="至"
                     start-placeholder="起始时间"
                     end-placeholder="结束时间"
-                    style="width: 240px;margin-left: 50px;"
+                    style="width: 240px; margin-left: 50px"
                   ></el-date-picker>
                 </div>
               </div>
@@ -101,7 +101,7 @@
                 <span class="block text-sm text-gray-700 font-medium"
                   >新建表单</span
                 >
-                <span class="block text-xs text-gray-500 mt-1"
+                <span class="block text-xs text-gray-500 mt-1 whitespace-nowrap"
                   >快速创建新表单</span
                 >
               </div>
@@ -153,40 +153,41 @@
       </div>
     </div>
 
-    <!-- 最近活动区域 - 独占一行 -->
+    <!-- 提交记录区域 - 独占一行 -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200">
       <div class="p-6 border-b border-gray-200">
         <div class="flex justify-between items-center">
-          <h3 class="text-lg font-semibold text-gray-900">最近活动</h3>
+          <h3 class="text-lg font-semibold text-gray-900">最近提交记录</h3>
           <el-button type="primary" link>查看全部</el-button>
         </div>
       </div>
       <div class="p-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="space-y-4">
           <div
-            v-for="activity in recentActivities"
-            :key="activity.id"
-            class="flex items-center p-4 bg-gray-50 rounded-lg"
+            v-for="record in submitRecords"
+            :key="record.id"
+            class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
           >
-            <div
-              class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4"
-            >
-              <el-icon class="text-blue-600"
-                ><component :is="activity.icon"
-              /></el-icon>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium text-gray-900 truncate">
-                {{ activity.title }}
-              </p>
-              <p class="text-xs text-gray-500">{{ activity.time }}</p>
-              <el-tag
-                :type="activity.status === 'success' ? 'success' : 'info'"
-                size="small"
-                class="mt-1"
+            <div class="flex items-center">
+              <div
+                class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4"
               >
-                {{ activity.statusText }}
-              </el-tag>
+                <el-icon class="text-green-600"><Document /></el-icon>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-900">
+                  {{ record.formTitle }}
+                </p>
+                <p class="text-xs text-gray-500">
+                  {{ record.submitterName }} 提交
+                </p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-medium text-gray-900">
+                {{ record.submitTime }}
+              </p>
+              <el-tag type="success" size="small">已提交</el-tag>
             </div>
           </div>
         </div>
@@ -217,38 +218,37 @@ const todayCreated = ref(0); // 今日新建
 const myFormViews = ref(0); // 我的表单总提交次数
 const dateRange = ref();
 // 最近活动数据（只显示当前用户的活动）
-const recentActivities = ref([
+// 提交记录数据
+const submitRecords = ref([
   {
     id: 1,
-    title: "创建了新表单「用户反馈表」",
-    time: "2分钟前",
-    icon: "Document",
-    status: "success",
-    statusText: "已发布",
+    formTitle: "用户反馈表",
+    submitterName: "张三",
+    submitTime: "14:32",
   },
   {
     id: 2,
-    title: "修改了表单「产品调研表」",
-    time: "15分钟前",
-    icon: "Edit",
-    status: "info",
-    statusText: "草稿",
+    formTitle: "产品调研表",
+    submitterName: "李四",
+    submitTime: "13:45",
   },
   {
     id: 3,
-    title: "导出了数据报表",
-    time: "1小时前",
-    icon: "DataAnalysis",
-    status: "success",
-    statusText: "完成",
+    formTitle: "员工满意度调查",
+    submitterName: "王五",
+    submitTime: "12:18",
   },
   {
     id: 4,
-    title: "更新了表单模板",
-    time: "2小时前",
-    icon: "Files",
-    status: "success",
-    statusText: "已保存",
+    formTitle: "客户信息登记表",
+    submitterName: "赵六",
+    submitTime: "11:52",
+  },
+  {
+    id: 5,
+    formTitle: "活动报名表",
+    submitterName: "钱七",
+    submitTime: "10:30",
   },
 ]);
 // 快捷操作方法
@@ -257,15 +257,15 @@ const createForm = () => {
 };
 
 const manageTemplates = () => {
-  router.push("/home/templates");
+  router.push("/home/template-center");
 };
 
 const viewReports = () => {
-  router.push("/home/reports");
+  router.push("/home/data-management");
 };
 
 const viewMyForms = () => {
-  router.push("/home/my-forms");
+  router.push("/home/form-management");
 };
 
 // 加载用户仪表盘数据的占位函数
