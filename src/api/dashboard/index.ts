@@ -1,3 +1,5 @@
 export {default as getDashboardStatsAPI} from './getDashboardStatsAPI'
 export {default as getDashboardtrendsAPI} from './getDashboardtrendsAPI'
+export {default as getRecentActivitiesAPI} from './getRecentActivitiesAPI'
+export {type TRecentActivities} from './getRecentActivitiesAPI'
 export {type Tchart} from './getDashboardtrendsAPI'

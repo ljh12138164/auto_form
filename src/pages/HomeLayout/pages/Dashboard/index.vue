@@ -176,16 +176,16 @@
               </div>
               <div>
                 <p class="text-sm font-medium text-gray-900">
-                  {{ record.formTitle }}
+                  {{ record.title }}
                 </p>
                 <p class="text-xs text-gray-500">
-                  {{ record.submitterName }} 提交
+                  {{ userStore.userInfo?.username }} 提交
                 </p>
               </div>
             </div>
             <div class="text-right">
               <p class="text-sm font-medium text-gray-900">
-                {{ record.submitTime }}
+                {{ record.submittedDate }}
               </p>
               <el-tag type="success" size="small">已提交</el-tag>
             </div>
@@ -197,7 +197,7 @@
 </template>
 
 <script setup lang="ts">
-import { getDashboardStatsAPI } from "@/api";
+import { getDashboardStatsAPI, getRecentActivitiesAPI, TRecentActivities } from "@/api";
 import {
   DataAnalysis,
   Document,
@@ -211,7 +211,8 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import ChartContent from "./components/ChartContent/index.vue";
 const router = useRouter();
-
+import { useUserStore } from "@/stores/modules/user";
+const userStore = useUserStore();
 // 个人统计数据
 const myForms = ref(0); // 我的表单总数
 const todayCreated = ref(0); // 今日新建
@@ -219,39 +220,12 @@ const myFormViews = ref(0); // 我的表单总提交次数
 const dateRange = ref();
 // 最近活动数据（只显示当前用户的活动）
 // 提交记录数据
-const submitRecords = ref([
-  {
-    id: 1,
-    formTitle: "用户反馈表",
-    submitterName: "张三",
-    submitTime: "14:32",
-  },
-  {
-    id: 2,
-    formTitle: "产品调研表",
-    submitterName: "李四",
-    submitTime: "13:45",
-  },
-  {
-    id: 3,
-    formTitle: "员工满意度调查",
-    submitterName: "王五",
-    submitTime: "12:18",
-  },
-  {
-    id: 4,
-    formTitle: "客户信息登记表",
-    submitterName: "赵六",
-    submitTime: "11:52",
-  },
-  {
-    id: 5,
-    formTitle: "活动报名表",
-    submitterName: "钱七",
-    submitTime: "10:30",
-  },
-]);
+const submitRecords = ref<TRecentActivities[]>([]);
 // 快捷操作方法
+const getRecentActivitiesData =async () => {
+    const res = await getRecentActivitiesAPI()
+    submitRecords.value = res.data    
+};
 const createForm = () => {
   router.push("/home/form-designer");
 };
@@ -280,6 +254,7 @@ const loadUserDashboardData = async () => {
 
 onMounted(async () => {
   loadUserDashboardData();
+  getRecentActivitiesData()
 });
 </script>
 
