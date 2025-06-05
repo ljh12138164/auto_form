@@ -206,7 +206,7 @@ import {
   Document,
   View,
 } from "@element-plus/icons-vue";
-import { getSubmitFormAPI, TsubmittedItem } from "@/api";
+import { getSubmitFormAPI, TsubmittedItem,delSubmitFormAPI } from "@/api";
 import { notification } from "@/utils";
 
 // 响应式数据
@@ -312,10 +312,16 @@ const handleBatchDelete = () => {
       cancelButtonText: "取消",
       type: "warning",
     }
-  ).then(() => {
-    ElMessage.success("删除成功");
+  ).then(async () => {
+    let arr:Array<number> = []
+    selectedRows.value.forEach(item=>{
+      arr.push(item.id)
+    })
+    await delSubmitFormAPI(arr)
+    notification("删除成功", `${selectedRows.value.length} 条数据删除成功`, "success");
+    getSubmitFormData()
     selectedRows.value = [];
-    // 这里应该调用删除API
+    arr = []
   });
 };
 
@@ -353,9 +359,10 @@ const handleDelete = (row: any) => {
       cancelButtonText: "取消",
       type: "warning",
     }
-  ).then(() => {
-    ElMessage.success("删除成功");
-    // 这里应该调用删除API并刷新列表
+  ).then(async() => {
+    await delSubmitFormAPI(row.id)
+    notification("删除成功", `${row.title} 数据删除成功`, "success");
+    getSubmitFormData()
   });
 };
 
