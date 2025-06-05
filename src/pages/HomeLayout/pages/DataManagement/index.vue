@@ -132,6 +132,10 @@
                 <el-icon><View /></el-icon>
                 查看
               </el-button>
+              <el-button type="warning" size="small" @click="handleExportSingle(row)">
+                <el-icon><Download /></el-icon>
+                导出
+              </el-button>
               <el-button type="danger" size="small" @click="handleDelete(row)">
                 <el-icon><Delete /></el-icon>
                 删除
@@ -197,22 +201,20 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import {
   Search,
   Refresh,
-  Download,
   Delete,
+  Download,
   Document,
-  Calendar,
-  TrendCharts,
-  Files,
   View,
 } from "@element-plus/icons-vue";
 import { getSubmitFormAPI, TsubmittedItem } from "@/api";
+import { notification } from "@/utils";
 
 // 响应式数据
 const loading = ref(false);
 const exportLoading = ref(false);
 const detailDialogVisible = ref(false);
-const selectedRows = ref([]);
-const currentRowData = ref(null);
+const selectedRows = ref<TsubmittedItem[]>([]);
+const currentRowData = ref<TsubmittedItem|null>(null);
 
 // 搜索表单
 const searchForm = reactive({
@@ -317,11 +319,14 @@ const handleBatchDelete = () => {
   });
 };
 
-const handleSelectionChange = (selection: any[]) => {
+const handleSelectionChange = (selection:TsubmittedItem[]) => {
+  console.log(selection);
+  
   selectedRows.value = selection;
 };
 
-const handleView = (row: any) => {
+const handleView = (row:TsubmittedItem) => {
+  console.log(row)
   currentRowData.value = row;
   detailDialogVisible.value = true;
 };
@@ -336,7 +341,7 @@ const handleExportSingle = (row: any) => {
   a.download = `${row.title}_${row.id}.json`;
   a.click();
   URL.revokeObjectURL(url);
-  ElMessage.success(`${row.title} 数据导出成功`);
+  notification("导出成功", `${row.title} 数据导出成功`, "success");
 };
 
 const handleDelete = (row: any) => {
