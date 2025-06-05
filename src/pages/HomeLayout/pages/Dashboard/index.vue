@@ -158,7 +158,7 @@
       <div class="p-6 border-b border-gray-200">
         <div class="flex justify-between items-center">
           <h3 class="text-lg font-semibold text-gray-900">最近提交记录</h3>
-          <el-button type="primary" link>查看全部</el-button>
+          <el-button type="primary" link @click="lookAll">{{isAll?'收起':'查看全部'}}</el-button>
         </div>
       </div>
       <div class="p-6">
@@ -221,11 +221,23 @@ const dateRange = ref();
 // 最近活动数据（只显示当前用户的活动）
 // 提交记录数据
 const submitRecords = ref<TRecentActivities[]>([]);
-// 快捷操作方法
+const limit = ref(10)
+const isAll = ref(false)
 const getRecentActivitiesData =async () => {
-    const res = await getRecentActivitiesAPI()
+    const res = await getRecentActivitiesAPI(limit.value)
     submitRecords.value = res.data    
 };
+const lookAll = ()=>{
+    isAll.value = !isAll.value
+    if(isAll.value){
+        limit.value = 1000000
+    }else{
+        limit.value = 10
+    }
+    getRecentActivitiesData()
+}
+// 快捷操作方法
+
 const createForm = () => {
   router.push("/home/form-designer");
 };

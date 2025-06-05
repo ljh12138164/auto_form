@@ -1,5 +1,5 @@
 <template>
-  <el-aside width="200px" class="bg-gray-50 border-r border-gray-200">
+  <el-aside width="220px" class="bg-gray-50 border-r border-gray-200">
     <div class="h-full flex flex-col">
       <h5 class="h-[64px] flex justify-center items-center">AUTO FORM</h5>
       <!-- 菜单 -->
