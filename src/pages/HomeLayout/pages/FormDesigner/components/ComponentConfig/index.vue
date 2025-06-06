@@ -17,7 +17,8 @@
         <el-switch v-model="modelValue.required" />
       </el-form-item>
       <el-form-item label="默认值" v-if="!['switch', 'upload'].includes(modelValue.type)">
-        <el-input v-model="modelValue.defaultValue" />
+        <el-input placeholder="请输入默认值" v-if="modelValue.type !== 'number'" v-model="modelValue.defaultValue" />
+        <el-input v-else placeholder="请输入数字" v-model="modelValue.defaultValue" type="number" />
       </el-form-item>
 
       <!-- 文本域特有配置 -->
@@ -119,6 +120,7 @@
             <el-button @click="addOption" size="small" class="w-full">
               添加选项
             </el-button>
+            
             
             <!-- 默认值提示 -->
             <div class="text-xs text-gray-500 mt-2">

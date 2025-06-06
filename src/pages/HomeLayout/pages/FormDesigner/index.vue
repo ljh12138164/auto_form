@@ -2,6 +2,14 @@
   <div class="form-designer h-full bg-gray-50">
     <!-- 标题设置弹窗 -->
     <TitleDialog v-model="showTitleDialog" v-model:form-config="formConfig" />
+    
+    <!-- 表单预览弹窗 -->
+    <FormPreview 
+      v-if="showPreview"
+      :form-config="formConfig"
+      :form-items="formItems"
+      @close="showPreview = false"
+    />
 
     <!-- 主体区域 -->
     <div class="flex h-full">
@@ -40,9 +48,13 @@ import ComponentPanel from "./components/ComponentPanel/index.vue";
 import DesignCanvas from "./components/DesignCanvas/index.vue";
 import PropertyPanel from "./components/PropertyPanel/index.vue";
 import TitleDialog from "./components/TitleDialog/index.vue";
+import FormPreview from "./components/FormPreview/index.vue";
 
 // 标题设置弹窗
 const showTitleDialog = ref(true);
+
+// 表单预览弹窗
+const showPreview = ref(false);
 
 // 表单配置
 const formConfig = reactive({
@@ -51,16 +63,7 @@ const formConfig = reactive({
   labelWidth: "100px",
   size: "default",
 });
-watch(
-  () => formConfig,
-  (newVal) => {
-    console.log("formConfig", newVal);
-  },
-  {
-    deep: true,
-    immediate: true,
-  }
-);
+
 // 选中的组件
 const selectedItemId = ref<string | null>(null);
 const selectedItem = computed(() => {
@@ -106,13 +109,20 @@ const handleDeleteItem = (index: number) => {
   ElMessage.success("组件删除成功");
 };
 
+// 修改预览事件处理
 const handlePreview = () => {
   if (formItems.value.length === 0) {
     ElMessage.warning("请先添加表单组件");
     return;
   }
+  
+  if (!formConfig.title.trim()) {
+    ElMessage.warning("请先设置表单标题");
+    return;
+  }
+  
   console.log("预览表单:", { formConfig, formItems: formItems.value });
-  ElMessage.success("预览功能开发中...");
+  showPreview.value = true;
 };
 
 const handleSave = () => {

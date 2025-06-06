@@ -34,7 +34,6 @@
 
         <!-- 表单项渲染 -->
         <el-form-item
-          :disabled="true"
           :label-width="element.labelWidth"
           :label="element.label"
           :prop="element.field"

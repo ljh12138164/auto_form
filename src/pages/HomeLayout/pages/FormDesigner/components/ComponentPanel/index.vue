@@ -8,7 +8,7 @@
     <div class="panel-body flex-1 overflow-y-auto p-4">
       <!-- 基础组件 -->
       <div class="component-group mb-6">
-        <h4 class="text-sm font-medium text-gray-600 mb-3">基础组件</h4>
+        <h4 class="text-sm font-medium text-gray-600 mb-3">表单组件</h4>
         <div class="grid grid-cols-2 gap-3">
           <div
             v-for="component in basicComponents"
@@ -26,7 +26,7 @@
       </div>
 
       <!-- 布局组件 -->
-      <div class="component-group">
+      <!-- <div class="component-group">
         <h4 class="text-sm font-medium text-gray-600 mb-3">布局组件</h4>
         <div class="grid grid-cols-2 gap-3">
           <div
@@ -42,7 +42,7 @@
             <div class="text-xs text-gray-700">{{ component.label }}</div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -140,11 +140,11 @@ const basicComponents = [
   },
 ];
 
-// 布局组件配置
-const layoutComponents = [
-  { type: "grid", label: "栅格", icon: Grid },
-  { type: "card", label: "卡片", icon: Postcard },
-];
+// // 布局组件配置
+// const layoutComponents = [
+//   { type: "grid", label: "栅格", icon: Grid },
+//   { type: "card", label: "卡片", icon: Postcard },
+// ];
 
 // 拖拽开始
 const handleDragStart = (event: DragEvent, component: any) => {

@@ -7,8 +7,7 @@
     :step="element.step || 1"
     :precision="element.precision"
     :placeholder="element.placeholder"
-    class="w-full"
-    @click.stop
+    style="width: 100%;"
   />
 </template>
 
