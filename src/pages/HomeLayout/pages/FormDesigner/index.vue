@@ -141,7 +141,9 @@ const handlePreview = () => {
     return;
   }
   console.log("预览表单:", { formConfig, formItems: formItems.value });
-  ElMessage.success("预览功能开发中...");
+  // ElMessage.success("预览功能开发中...");
+  showPreview.value = true;
+
 };
 
 const handleSave = () => {
