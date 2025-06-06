@@ -1,5 +1,5 @@
 <template>
-  <el-switch :model-value="element.defaultValue" />
+  <el-switch :model-value="element.isSwitch" />
 </template>
 
 <script setup lang="ts">

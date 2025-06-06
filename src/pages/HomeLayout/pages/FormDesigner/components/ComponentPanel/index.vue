@@ -84,6 +84,7 @@ const basicComponents = [
   {
     type: "switch",
     label: "开关",
+    isSwitch: false,
     icon: Switch,
     defaultProps: {},
   },

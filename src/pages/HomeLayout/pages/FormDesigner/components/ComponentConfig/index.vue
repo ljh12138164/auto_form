@@ -7,13 +7,16 @@
       <el-form-item label="字段名称">
         <el-input v-model="modelValue.field" />
       </el-form-item>
-      <el-form-item label="占位提示">
+      <el-form-item label="字段宽度">
+        <el-input v-model="modelValue.labelWidth" placeholder="如:100px" />
+      </el-form-item>
+      <el-form-item label="占位提示" v-if="modelValue.type !== 'switch'">
         <el-input v-model="modelValue.placeholder" />
       </el-form-item>
-      <el-form-item label="是否必填">
+      <el-form-item label="是否必填" v-if="modelValue.type !== 'switch'">
         <el-switch v-model="modelValue.required" />
       </el-form-item>
-      <el-form-item label="默认值">
+      <el-form-item label="默认值" v-if="modelValue.type !== 'switch'">
         <el-input v-model="modelValue.defaultValue" />
       </el-form-item>
 
@@ -44,6 +47,12 @@
               >添加选项</el-button
             >
           </div>
+        </el-form-item>
+      </template>
+      <!-- 开关特有配置 -->
+      <template v-if="modelValue.type === 'switch'">
+        <el-form-item label="状态">
+          <el-switch v-model="modelValue.isSwitch" />
         </el-form-item>
       </template>
     </el-form>
