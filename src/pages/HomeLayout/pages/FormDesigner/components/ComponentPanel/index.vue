@@ -55,6 +55,12 @@ import {
   Switch,
   Grid,
   Postcard,
+  // 添加新的图标
+  Document,
+  Upload,
+  Odometer,
+  CircleCheck,
+  Select as SelectIcon,
 } from "@element-plus/icons-vue";
 
 // 基础组件配置
@@ -64,6 +70,18 @@ const basicComponents = [
     label: "输入框",
     icon: EditPen,
     defaultProps: { placeholder: "请输入内容" },
+  },
+  {
+    type: "textarea",
+    label: "文本域",
+    icon: Document,
+    defaultProps: { placeholder: "请输入多行文本", rows: 3 },
+  },
+  {
+    type: "number",
+    label: "数字输入",
+    icon: Odometer,
+    defaultProps: { placeholder: "请输入数字", min: 0, max: 100, step: 1 },
   },
   {
     type: "select",
@@ -76,10 +94,42 @@ const basicComponents = [
     ],
   },
   {
+    type: "radio",
+    label: "单选框",
+    icon: CircleCheck,
+    defaultProps: { placeholder: "请选择" },
+    options: [
+      { label: "选项1", value: "1" },
+      { label: "选项2", value: "2" },
+    ],
+  },
+  {
+    type: "checkbox",
+    label: "多选框",
+    icon: SelectIcon,
+    defaultProps: { placeholder: "请选择" },
+    options: [
+      { label: "选项1", value: "1" },
+      { label: "选项2", value: "2" },
+    ],
+  },
+  {
     type: "date",
     label: "日期选择",
     icon: Calendar,
     defaultProps: { placeholder: "请选择日期" },
+  },
+  {
+    type: "upload",
+    label: "文件上传",
+    icon: Upload,
+    defaultProps: { 
+      buttonText: "选择文件", 
+      tip: "请选择要上传的文件",
+      accept: "*",
+      multiple: false,
+      limit: 1
+    },
   },
   {
     type: "switch",
