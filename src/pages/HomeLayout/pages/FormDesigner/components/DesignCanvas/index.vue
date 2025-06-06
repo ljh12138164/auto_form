@@ -58,7 +58,7 @@
           v-else
           :model-value="formItems"
           :selected-item-id="selectedItemId"
-          @update:model-value="$emit('update:formItems', $event)"
+          @update:model-value="handleFormItemsUpdate"
           @select-item="$emit('selectItem', $event)"
           @copy-item="$emit('copyItem', $event)"
           @delete-item="$emit('deleteItem', $event)"
@@ -105,12 +105,17 @@ const emits = defineEmits([
 // 拖拽状态：标记是否正在拖拽悬停
 const isDragOver = ref(false)
 
+// 处理 FormItemList 的更新事件
+const handleFormItemsUpdate = (newFormItems: any[]) => {
+  console.log('FormItemList 更新:', newFormItems.map(item => item.label))
+  emits('update:formItems', newFormItems)
+}
+
 // 拖拽进入事件处理函数
 const handleDragEnter = (event: DragEvent) => {
   event.preventDefault()  // 阻止默认行为
   isDragOver.value = true // 设置拖拽悬停状态为 true
   console.log("handleDragEnter");
-  
 }
 
 // 拖拽离开事件处理函数
@@ -124,8 +129,6 @@ const handleDragLeave = (event: DragEvent) => {
 const handleDragOver = (event: DragEvent) => {
   event.preventDefault()  // 阻止默认行为，允许放置
   event.dataTransfer!.dropEffect = 'copy' // 设置拖拽效果为复制
-  // console.log("handleDragOver",event.dataTransfer);
-  
 }
 
 // 拖拽放置事件处理函数

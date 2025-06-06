@@ -1,85 +1,57 @@
 <template>
   <div class="form-items-container">
-    <el-form 
-      :model="formData" 
-      class="form-items-list"
-    >
-    <!--    mb-2 -->
+    <el-form :model="formData" class="form-items-list">
       <div
         v-for="(element, index) in modelValue"
         :key="element.id"
-        
-        class="form-item-wrapper p-3 relative border-transparent border-2 rounded-lg hover:border-blue-300 transition-all duration-200 group"
-        :class="{ 
-          'border-blue-500 bg-blue-50 transform scale-105 shadow-md': selectedItemId === element.id,
-          'hover:shadow-sm': selectedItemId !== element.id 
+        class="form-item-wrapper p-3 relative border-transparent border-2 rounded-lg hover:border-blue-300 transition-all duration-200 group cursor-move"
+        :class="{
+          'border-blue-500 bg-blue-50 transform scale-105 shadow-md':
+            selectedItemId === element.id,
+          'hover:shadow-sm': selectedItemId !== element.id,
+          'dragging': draggedIndex === index
         }"
         @click="$emit('selectItem', element)"
         draggable="true"
         @dragstart="handleItemDragStart($event, element, index)"
         @dragover="handleItemDragOver($event, index)"
         @drop="handleItemDrop($event, index)"
+        @dragenter="handleItemDragEnter($event, index)"
+        @dragend="handleItemDragEnd($event)"
       >
+        <!-- 拖拽指示器 -->
+        <div class="drag-indicator absolute left-1 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <el-icon class="text-gray-400"><Rank /></el-icon>
+        </div>
+
+        <!-- 插入指示线 -->
+        <div 
+          v-if="dragOverIndex === index && draggedIndex !== index"
+          class="drop-indicator absolute top-0 left-0 right-0 h-0.5 bg-blue-500 z-10"
+        ></div>
+
         <!-- 表单项渲染 -->
         <el-form-item
           :label="element.label"
           :prop="element.field"
           :required="element.required"
-          class="mb-0"
+          class="mb-0 ml-6"
         >
-          <!-- 输入框 -->
+        <!-- 文本输入 -->
           <template v-if="element.type === 'input'">
-            <el-input
-              :model-value="element.defaultValue"
-              :placeholder="element.placeholder"
-              class="w-full"
-              @click.stop
-            />
+            <ElInput :element @click.stop></ElInput>
           </template>
-          
           <!-- 选择器 -->
           <template v-else-if="element.type === 'select'">
-            <el-select
-              :model-value="element.defaultValue"
-              :placeholder="element.placeholder"
-              class="w-full"
-              @click.stop
-            >
-              <el-option
-                v-for="option in element.options || []"
-                :key="option.value"
-                :label="option.label"
-                :value="option.value"
-              />
-            </el-select>
+            <ElSelect :element @click.stop></ElSelect>
           </template>
-          
           <!-- 日期选择器 -->
           <template v-else-if="element.type === 'date'">
-            <el-date-picker
-              :model-value="element.defaultValue"
-              :placeholder="element.placeholder"
-              class="w-full"
-              @click.stop
-            />
+            <ElDatePicker :element @click.stop></ElDatePicker>
           </template>
-          
           <!-- 开关 -->
           <template v-else-if="element.type === 'switch'">
-            <el-switch
-              :model-value="element.defaultValue"
-              @click.stop
-            />
-          </template>
-          
-          <!-- 其他组件（备用） -->
-          <template v-else>
-            <el-input
-              :model-value="element.defaultValue"
-              :placeholder="element.placeholder || '请输入内容'"
-              class="w-full"
-              @click.stop
-            />
+            <ElSwitch :element @click.stop></ElSwitch>
           </template>
         </el-form-item>
 
@@ -103,7 +75,11 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { CopyDocument, Delete } from "@element-plus/icons-vue";
+import { CopyDocument, Delete, Rank } from "@element-plus/icons-vue";
+import ElInput from "./components/ElInput/index.vue";
+import ElSelect from "./components/ElSelect/index.vue";
+import ElDatePicker from "./components/ElDatePicker/index.vue";
+import ElSwitch from "./components/ElSwitch/index.vue";
 
 interface Props {
   modelValue: any[];
@@ -122,7 +98,7 @@ const emits = defineEmits([
 // 表单数据对象
 const formData = computed(() => {
   const data: Record<string, any> = {};
-  props.modelValue.forEach(item => {
+  props.modelValue.forEach((item) => {
     if (item.field) {
       data[item.field] = item.defaultValue;
     }
@@ -133,25 +109,87 @@ const formData = computed(() => {
 // 拖拽相关
 const draggedItem = ref<any>(null);
 const draggedIndex = ref<number>(-1);
+const dragOverIndex = ref<number>(-1);
 
 const handleItemDragStart = (event: DragEvent, item: any, index: number) => {
+  console.log('开始拖拽:', item.label, 'index:', index);
+  
+  // 阻止事件冒泡到父容器
+  event.stopPropagation();
+  
   draggedItem.value = item;
   draggedIndex.value = index;
   event.dataTransfer!.effectAllowed = "move";
+  
+  // 设置拖拽数据，使用特殊标识区分内部排序和外部添加
+  event.dataTransfer!.setData("text/plain", "internal-sort");
+  event.dataTransfer!.setData("application/x-form-item-sort", JSON.stringify({
+    index,
+    item
+  }));
+  
+  // 添加拖拽样式
+  if (event.target instanceof HTMLElement) {
+    const wrapper = event.target.closest('.form-item-wrapper') as HTMLElement;
+    if (wrapper) {
+      wrapper.style.opacity = "0.5";
+    }
+  }
 };
 
 const handleItemDragOver = (event: DragEvent, index: number) => {
+  // 检查是否是内部排序
+  const isInternalSort = event.dataTransfer?.types.includes('application/x-form-item-sort');
+  if (!isInternalSort) return;
+  
   event.preventDefault();
+  event.stopPropagation();
   event.dataTransfer!.dropEffect = "move";
+  
+  dragOverIndex.value = index;
+};
+
+const handleItemDragEnter = (event: DragEvent, index: number) => {
+  // 检查是否是内部排序
+  const isInternalSort = event.dataTransfer?.types.includes('application/x-form-item-sort');
+  if (!isInternalSort) return;
+  
+  event.preventDefault();
+  event.stopPropagation();
+};
+
+const handleItemDragEnd = (event: DragEvent) => {
+  // 恢复所有样式
+  const draggedElements = document.querySelectorAll('.form-item-wrapper[style*="opacity"]');
+  draggedElements.forEach((el: any) => {
+    el.style.opacity = "";
+  });
+  
+  // 重置状态
+  draggedItem.value = null;
+  draggedIndex.value = -1;
+  dragOverIndex.value = -1;
 };
 
 const handleItemDrop = (event: DragEvent, dropIndex: number) => {
+  // 检查是否是内部排序
+  const isInternalSort = event.dataTransfer?.types.includes('application/x-form-item-sort');
+  if (!isInternalSort) {
+    return; // 让父容器处理外部组件添加
+  }
+  
   event.preventDefault();
+  event.stopPropagation();
+  
+  console.log('FormItemList 内部排序 - 放置到:', dropIndex, '原位置:', draggedIndex.value);
 
   if (draggedIndex.value !== -1 && draggedIndex.value !== dropIndex) {
     const items = [...props.modelValue];
     const draggedItemData = items.splice(draggedIndex.value, 1)[0];
     items.splice(dropIndex, 0, draggedItemData);
+    
+    console.log('FormItemList 更新后的数组:', items.map(item => item.label));
+    
     emits("update:modelValue", items);
     emits("change", {
       moved: {
@@ -162,21 +200,24 @@ const handleItemDrop = (event: DragEvent, dropIndex: number) => {
     });
   }
 
-  draggedItem.value = null;
-  draggedIndex.value = -1;
+  // 重置状态
+  dragOverIndex.value = -1;
 };
-
-// 可以移除 getComponentByType 函数，因为现在直接在模板中处理
 </script>
 
 <style lang="scss" scoped>
 .form-item-wrapper {
   position: relative;
+  user-select: none;
 
   &:hover {
     .item-actions {
       opacity: 1;
     }
+  }
+
+  &.dragging {
+    opacity: 0.5;
   }
 }
 
@@ -184,7 +225,40 @@ const handleItemDrop = (event: DragEvent, dropIndex: number) => {
   opacity: 0;
   transition: opacity 0.2s;
 }
+
+.drag-indicator {
+  cursor: grab;
+  
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.drop-indicator {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 :deep(.el-form-item) {
   margin: 0;
+}
+
+:deep(.el-form-item__content) {
+  pointer-events: none;
+}
+
+:deep(.el-input),
+:deep(.el-select),
+:deep(.el-date-editor),
+:deep(.el-switch) {
+  pointer-events: auto;
 }
 </style>
