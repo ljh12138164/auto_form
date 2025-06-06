@@ -1,57 +1,68 @@
 <template>
   <div class="form-designer h-full bg-gray-50">
-    <!-- 标题设置弹窗 -->
-    <TitleDialog v-model="showTitleDialog" v-model:form-config="formConfig" />
+    <!-- 如果没有选择表单，显示表单管理页面 -->
+    <CreateForm v-if="!currentFormId" @form-selected="handleFormSelected" />
     
-    <!-- 表单预览弹窗 -->
-    <FormPreview 
-      v-if="showPreview"
-      :form-config="formConfig"
-      :form-items="formItems"
-      @close="showPreview = false"
-    />
-
-    <!-- 主体区域 -->
-    <div class="flex h-full">
-      <!-- 左侧组件面板 -->
-      <ComponentPanel />
-
-      <!-- 中间设计画布 -->
-      <DesignCanvas
+    <!-- 表单设计器 -->
+    <template v-else>
+      <!-- 标题设置弹窗 -->
+      <TitleDialog v-model="showTitleDialog" v-model:form-config="formConfig" />
+      
+      <!-- 表单预览弹窗 -->
+      <FormPreview 
+        v-if="showPreview"
         :form-config="formConfig"
-        v-model:form-items="formItems"
-        :selected-item-id="selectedItemId"
-        @edit-title="editTitle"
-        @preview="handlePreview"
-        @save="handleSave"
-        @publish="handlePublish"
-        @select-item="handleSelectItem"
-        @copy-item="handleCopyItem"
-        @delete-item="handleDeleteItem"
-        @form-items-change="handleFormItemsChange"
+        :form-items="formItems"
+        @close="showPreview = false"
       />
 
-      <!-- 右侧属性配置面板 -->
-      <PropertyPanel
-        :form-config="formConfig"
-        :selected-item="selectedItem"
-        @edit-title="editTitle"
-      />
-    </div>
+      <!-- 主体区域 -->
+      <div class="flex h-full">
+        <!-- 左侧组件面板 -->
+        <ComponentPanel />
+
+        <!-- 中间设计画布 -->
+        <DesignCanvas
+          :form-config="formConfig"
+          v-model:form-items="formItems"
+          :selected-item-id="selectedItemId"
+          @edit-title="editTitle"
+          @preview="handlePreview"
+          @save="handleSave"
+          @publish="handlePublish"
+          @select-item="handleSelectItem"
+          @copy-item="handleCopyItem"
+          @delete-item="handleDeleteItem"
+          @form-items-change="handleFormItemsChange"
+          @back-to-list="handleBackToList"
+        />
+
+        <!-- 右侧属性配置面板 -->
+        <PropertyPanel
+          :form-config="formConfig"
+          :selected-item="selectedItem"
+          @edit-title="editTitle"
+        />
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from "vue";
+import { ref, reactive, computed } from "vue";
 import { ElMessage } from "element-plus";
 import ComponentPanel from "./components/ComponentPanel/index.vue";
 import DesignCanvas from "./components/DesignCanvas/index.vue";
 import PropertyPanel from "./components/PropertyPanel/index.vue";
 import TitleDialog from "./components/TitleDialog/index.vue";
 import FormPreview from "./components/FormPreview/index.vue";
+import CreateForm from "./components/CreateForm/index.vue";
+
+// 当前选中的表单ID
+const currentFormId = ref<string | null>(null);
 
 // 标题设置弹窗
-const showTitleDialog = ref(true);
+const showTitleDialog = ref(false);
 
 // 表单预览弹窗
 const showPreview = ref(false);
@@ -74,6 +85,21 @@ const selectedItem = computed(() => {
 
 // 表单项列表
 const formItems = ref<any[]>([]);
+
+// 处理表单选择
+const handleFormSelected = (formId: string, formData: any) => {
+  currentFormId.value = formId;
+  // 加载表单数据
+  Object.assign(formConfig, formData);
+};
+
+// 返回表单列表
+const handleBackToList = () => {
+  currentFormId.value = null;
+  // 重置数据
+  formItems.value = [];
+  selectedItemId.value = null;
+};
 
 // 事件处理
 const editTitle = () => {
@@ -109,20 +135,13 @@ const handleDeleteItem = (index: number) => {
   ElMessage.success("组件删除成功");
 };
 
-// 修改预览事件处理
 const handlePreview = () => {
   if (formItems.value.length === 0) {
     ElMessage.warning("请先添加表单组件");
     return;
   }
-  
-  if (!formConfig.title.trim()) {
-    ElMessage.warning("请先设置表单标题");
-    return;
-  }
-  
   console.log("预览表单:", { formConfig, formItems: formItems.value });
-  showPreview.value = true;
+  ElMessage.success("预览功能开发中...");
 };
 
 const handleSave = () => {

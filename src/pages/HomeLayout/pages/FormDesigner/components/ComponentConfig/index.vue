@@ -10,27 +10,41 @@
       <el-form-item label="字段宽度">
         <el-input v-model="modelValue.labelWidth" placeholder="如:100px" />
       </el-form-item>
-      <el-form-item label="占位提示" v-if="!['switch', 'radio', 'checkbox', 'select'].includes(modelValue.type)">
+      <el-form-item
+        label="占位提示"
+        v-if="
+          !['switch', 'radio', 'checkbox', 'select'].includes(modelValue.type)
+        "
+      >
         <el-input v-model="modelValue.placeholder" />
       </el-form-item>
-      <el-form-item label="是否必填" v-if="!['switch'].includes(modelValue.type)">
+      <el-form-item
+        label="是否必填"
+        v-if="!['switch'].includes(modelValue.type)"
+      >
         <el-switch v-model="modelValue.required" />
       </el-form-item>
-      
+
       <!-- 校验配置 -->
-      <template v-if="modelValue.required && !['switch'].includes(modelValue.type)">
+      <template
+        v-if="modelValue.required && !['switch'].includes(modelValue.type)"
+      >
         <el-form-item label="必填提示">
-          <el-input 
-            v-model="modelValue.requiredMessage" 
+          <el-input
+            v-model="modelValue.requiredMessage"
             placeholder="请输入必填时的提示文字"
           />
         </el-form-item>
       </template>
-      
+
       <!-- 通用校验规则 - 只对输入框和文本域有效 -->
       <template v-if="['input', 'textarea'].includes(modelValue.type)">
         <el-form-item label="校验规则">
-          <el-select v-model="modelValue.validationType" placeholder="选择校验类型" clearable>
+          <el-select
+            v-model="modelValue.validationType"
+            placeholder="选择校验类型"
+            clearable
+          >
             <el-option label="无" value="" />
             <el-option label="邮箱" value="email" />
             <el-option label="手机号" value="phone" />
@@ -39,41 +53,68 @@
             <el-option label="自定义正则" value="custom" />
           </el-select>
         </el-form-item>
-        
+
         <!-- 自定义正则表达式 -->
-        <el-form-item label="正则表达式" v-if="modelValue.validationType === 'custom'">
-          <el-input 
-            v-model="modelValue.customRegex" 
+        <el-form-item
+          label="正则表达式"
+          v-if="modelValue.validationType === 'custom'"
+        >
+          <el-input
+            v-model="modelValue.customRegex"
             placeholder="请输入正则表达式"
           />
         </el-form-item>
-        
+
         <!-- 校验失败提示 -->
         <el-form-item label="校验提示" v-if="modelValue.validationType">
-          <el-input 
-            v-model="modelValue.validationMessage" 
+          <el-input
+            v-model="modelValue.validationMessage"
             placeholder="校验失败时的提示文字"
           />
         </el-form-item>
-        
+
         <!-- 字符长度限制 -->
         <el-form-item label="最小长度">
-          <el-input-number v-model="modelValue.minLength" :min="0" placeholder="最小字符数" />
+          <el-input-number
+            v-model="modelValue.minLength"
+            :min="0"
+            placeholder="最小字符数"
+          />
         </el-form-item>
         <el-form-item label="最大长度">
-          <el-input-number v-model="modelValue.maxLength" :min="0" placeholder="最大字符数" />
+          <el-input-number
+            v-model="modelValue.maxLength"
+            :min="0"
+            placeholder="最大字符数"
+          />
         </el-form-item>
       </template>
-      
-      <el-form-item label="默认值" v-if="!['switch', 'upload'].includes(modelValue.type)">
-        <el-input placeholder="请输入默认值" v-if="modelValue.type !== 'number'" v-model="modelValue.defaultValue" />
-        <el-input v-else placeholder="请输入数字" v-model="modelValue.defaultValue" type="number" />
+
+      <el-form-item
+        label="默认值"
+        v-if="!['switch', 'upload'].includes(modelValue.type)"
+      >
+        <el-input
+          placeholder="请输入默认值"
+          v-if="modelValue.type !== 'number'"
+          v-model="modelValue.defaultValue"
+        />
+        <el-input
+          v-else
+          placeholder="请输入数字"
+          v-model="modelValue.defaultValue"
+          type="number"
+        />
       </el-form-item>
 
       <!-- 文本域特有配置 -->
       <template v-if="modelValue.type === 'textarea'">
         <el-form-item label="行数">
-          <el-input-number v-model="modelValue.rows" :min="2" :max="10" />
+          <el-input-number
+            v-model="modelValue.rows"
+            :min="modelValue.min"
+            :max="modelValue.max"
+          />
         </el-form-item>
       </template>
 
@@ -102,7 +143,10 @@
           <el-input v-model="modelValue.tip" />
         </el-form-item>
         <el-form-item label="文件类型">
-          <el-input v-model="modelValue.accept" placeholder="如: .jpg,.png,.pdf" />
+          <el-input
+            v-model="modelValue.accept"
+            placeholder="如: .jpg,.png,.pdf"
+          />
         </el-form-item>
         <el-form-item label="多选">
           <el-switch v-model="modelValue.multiple" />
@@ -113,7 +157,9 @@
       </template>
 
       <!-- 选择器、单选框、多选框特有配置 -->
-      <template v-if="['select', 'radio', 'checkbox'].includes(modelValue.type)">
+      <template
+        v-if="['select', 'radio', 'checkbox'].includes(modelValue.type)"
+      >
         <el-form-item label="选项配置">
           <div class="space-y-2">
             <div
@@ -125,7 +171,9 @@
               <div class="flex-shrink-0">
                 <!-- 单选框类型使用 radio -->
                 <el-radio
-                  v-if="modelValue.type === 'radio' || modelValue.type === 'select'"
+                  v-if="
+                    modelValue.type === 'radio' || modelValue.type === 'select'
+                  "
                   :model-value="modelValue.defaultValue"
                   :label="option.value"
                   @change="setDefaultValue(option.value)"
@@ -141,7 +189,7 @@
                 >
                 </el-checkbox>
               </div>
-              
+
               <!-- 选项文本输入 -->
               <el-input
                 v-model="option.label"
@@ -149,7 +197,7 @@
                 size="default"
                 class="flex-1"
               />
-              
+
               <!-- 选项值输入 -->
               <el-input
                 v-model="option.value"
@@ -158,21 +206,29 @@
                 class="flex-1"
                 @input="updateOptionValue(index, $event)"
               />
-              
+
               <!-- 删除按钮 -->
-              <el-button @click="removeOption(index)" size="default" class="flex-shrink-0">
+              <el-button
+                @click="removeOption(index)"
+                size="default"
+                class="flex-shrink-0"
+              >
                 <el-icon><Delete /></el-icon>
               </el-button>
             </div>
-            
+
             <!-- 添加选项按钮 -->
             <el-button @click="addOption" size="default" class="w-full">
               添加选项
             </el-button>
-            
+
             <!-- 默认值提示 -->
             <div class="text-sm text-gray-500 mt-2">
-              <template v-if="modelValue.type === 'radio' || modelValue.type === 'select'">
+              <template
+                v-if="
+                  modelValue.type === 'radio' || modelValue.type === 'select'
+                "
+              >
                 点击前面的圆圈选择默认选中项
               </template>
               <template v-else-if="modelValue.type === 'checkbox'">
@@ -205,7 +261,10 @@ defineEmits(["update:modelValue"]);
 
 // 添加选项
 const addOption = () => {
-  if (props.modelValue && ['select', 'radio', 'checkbox'].includes(props.modelValue.type)) {
+  if (
+    props.modelValue &&
+    ["select", "radio", "checkbox"].includes(props.modelValue.type)
+  ) {
     if (!props.modelValue.options) {
       props.modelValue.options = [];
     }
@@ -219,20 +278,25 @@ const addOption = () => {
 
 // 删除选项
 const removeOption = (index: number) => {
-  if (props.modelValue && ['select', 'radio', 'checkbox'].includes(props.modelValue.type)) {
+  if (
+    props.modelValue &&
+    ["select", "radio", "checkbox"].includes(props.modelValue.type)
+  ) {
     const removedOption = props.modelValue.options[index];
     props.modelValue.options.splice(index, 1);
-    
+
     // 如果删除的选项是默认值，需要清除默认值
-    if (props.modelValue.type === 'checkbox') {
+    if (props.modelValue.type === "checkbox") {
       if (Array.isArray(props.modelValue.defaultValue)) {
-        const valueIndex = props.modelValue.defaultValue.indexOf(removedOption.value);
+        const valueIndex = props.modelValue.defaultValue.indexOf(
+          removedOption.value
+        );
         if (valueIndex > -1) {
           props.modelValue.defaultValue.splice(valueIndex, 1);
         }
       }
     } else if (props.modelValue.defaultValue === removedOption.value) {
-      props.modelValue.defaultValue = '';
+      props.modelValue.defaultValue = "";
     }
   }
 };
@@ -247,7 +311,7 @@ const toggleDefaultValue = (value: string) => {
   if (!Array.isArray(props.modelValue.defaultValue)) {
     props.modelValue.defaultValue = [];
   }
-  
+
   const index = props.modelValue.defaultValue.indexOf(value);
   if (index > -1) {
     // 如果已选中，则取消选中
@@ -270,9 +334,9 @@ const isDefaultSelected = (value: string) => {
 const updateOptionValue = (index: number, newValue: string) => {
   const oldValue = props.modelValue.options[index].value;
   props.modelValue.options[index].value = newValue;
-  
+
   // 更新默认值中的对应值
-  if (props.modelValue.type === 'checkbox') {
+  if (props.modelValue.type === "checkbox") {
     if (Array.isArray(props.modelValue.defaultValue)) {
       const valueIndex = props.modelValue.defaultValue.indexOf(oldValue);
       if (valueIndex > -1) {

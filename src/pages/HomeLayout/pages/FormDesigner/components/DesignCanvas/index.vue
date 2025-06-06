@@ -15,7 +15,7 @@
         <!-- 右侧：操作按钮组 -->
         <div class="flex items-center gap-3">
           <!-- 预览按钮，点击时触发 preview 事件 -->
-          <el-button size="default" @click="$emit('preview')">
+          <el-button size="primary" @click="$emit('preview')">
             <el-icon><View /></el-icon>
             预览
           </el-button>
@@ -23,11 +23,6 @@
           <el-button size="default" @click="$emit('save')">
             <el-icon><Document /></el-icon>
             保存
-          </el-button>
-          <!-- 发布按钮，点击时触发 publish 事件 -->
-          <el-button type="primary" size="default" @click="$emit('publish')">
-            <el-icon><Upload /></el-icon>
-            发布
           </el-button>
         </div>
       </div>
