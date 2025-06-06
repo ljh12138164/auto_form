@@ -9,9 +9,9 @@
             >表单标题</label
           >
           <el-input
+            @keydown.enter="getSubmitFormData"
             v-model="searchForm.title"
             placeholder="请输入表单标题"
-            clearable
             style="width: 200px"
           />
         </div>
@@ -22,19 +22,18 @@
             >提交时间</label
           >
           <el-date-picker
-            v-model="searchForm.dateRange"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
+            @keydown.enter="getSubmitFormData"
+            v-model="searchForm.submitDate"
+            type="date"
             format="YYYY-MM-DD"
             value-format="YYYY-MM-DD"
+            placeholder="提交时间"
             class="w-full"
           />
         </div>
 
         <!-- 内容关键词搜索 -->
-        <div>
+        <!-- <div>
           <label class="block text-sm font-medium text-gray-700 mb-2"
             >内容关键词</label
           >
@@ -44,13 +43,13 @@
             clearable
             class="w-full"
           />
-        </div>
+        </div> -->
       </div>
 
       <!-- 操作按钮 -->
       <div class="flex justify-between items-center mt-6">
         <div class="flex gap-3">
-          <el-button type="primary" @click="getSubmitFormData" :loading="loading">
+          <el-button type="primary" @click="getSubmitFormData">
             <el-icon><Search /></el-icon>
             搜索
           </el-button>
@@ -75,9 +74,7 @@
       <div class="p-4 border-b border-gray-200">
         <div class="flex justify-between items-center">
           <h3 class="text-lg font-medium text-gray-800">我的提交记录</h3>
-          <div class="text-sm text-gray-500">
-            共 {{ total }} 条记录
-          </div>
+          <div class="text-sm text-gray-500">共 {{ total }} 条记录</div>
         </div>
       </div>
 
@@ -132,7 +129,11 @@
                 <el-icon><View /></el-icon>
                 查看
               </el-button>
-              <el-button type="warning" size="small" @click="handleExportSingle(row)">
+              <el-button
+                type="warning"
+                size="small"
+                @click="handleExportSingle(row)"
+              >
                 <el-icon><Download /></el-icon>
                 导出
               </el-button>
@@ -206,23 +207,22 @@ import {
   Document,
   View,
 } from "@element-plus/icons-vue";
-import { getSubmitFormAPI, TsubmittedItem,delSubmitFormAPI } from "@/api";
+import { getSubmitFormAPI, TsubmittedItem, delSubmitFormAPI } from "@/api";
 import { notification } from "@/utils";
 
 // 响应式数据
 const loading = ref(false);
-const exportLoading = ref(false);
 const detailDialogVisible = ref(false);
 const selectedRows = ref<TsubmittedItem[]>([]);
-const currentRowData = ref<TsubmittedItem|null>(null);
+const currentRowData = ref<TsubmittedItem | null>(null);
 
 // 搜索表单
 const searchForm = reactive({
   title: "",
-  dateRange: [],
-  keyword: "",
+  submitDate: "",
+  // keyword: "",
 });
-const total=ref()
+const total = ref();
 // 分页
 const pagination = reactive({
   pageNum: 1,
@@ -234,14 +234,14 @@ const tableData = ref<TsubmittedItem[]>([]);
 const getSubmitFormData = async () => {
   loading.value = true;
   // 模拟获取数据请求
-  const res = await getSubmitFormAPI(pagination)
-  tableData.value = res.data.submittedDate
-  total.value=res.data.total
+  const res = await getSubmitFormAPI({ ...pagination, ...searchForm });
+  tableData.value = res.data.submittedDate;
+  total.value = res.data.total;
   loading.value = false;
-}
-onMounted(()=>{
-    getSubmitFormData()
-})
+};
+onMounted(() => {
+  getSubmitFormData();
+});
 // 工具函数
 const formatDate = (dateTime: string) => {
   return dateTime.split(" ")[0];
@@ -275,32 +275,14 @@ const getDataPreview = (data: any) => {
 
   return keys.length > 3 ? `${preview}...` : preview;
 };
-// 事件处理函数
-// const handleSearch = () => {
-//   loading.value = true;
-//   // 模拟搜索请求
-//   setTimeout(() => {
-//     loading.value = false;
-//     ElMessage.success("搜索完成");
-//   }, 1000);
-// };
 
 const handleReset = () => {
   Object.assign(searchForm, {
     title: "",
-    dateRange: [],
-    keyword: "",
+    submitDate: "",
+    // keyword: "",
   });
   getSubmitFormData();
-};
-
-const handleExport = () => {
-  exportLoading.value = true;
-  // 模拟导出请求
-  setTimeout(() => {
-    exportLoading.value = false;
-    ElMessage.success("导出成功，文件已下载到本地");
-  }, 2000);
 };
 
 const handleBatchDelete = () => {
@@ -313,26 +295,30 @@ const handleBatchDelete = () => {
       type: "warning",
     }
   ).then(async () => {
-    let arr:Array<number> = []
-    selectedRows.value.forEach(item=>{
-      arr.push(item.id)
-    })
-    await delSubmitFormAPI(arr)
-    notification("删除成功", `${selectedRows.value.length} 条数据删除成功`, "success");
-    getSubmitFormData()
+    let arr: Array<number> = [];
+    selectedRows.value.forEach((item) => {
+      arr.push(item.id);
+    });
+    await delSubmitFormAPI(arr);
+    notification(
+      "删除成功",
+      `${selectedRows.value.length} 条数据删除成功`,
+      "success"
+    );
+    getSubmitFormData();
     selectedRows.value = [];
-    arr = []
+    arr = [];
   });
 };
 
-const handleSelectionChange = (selection:TsubmittedItem[]) => {
+const handleSelectionChange = (selection: TsubmittedItem[]) => {
   console.log(selection);
-  
+
   selectedRows.value = selection;
 };
 
-const handleView = (row:TsubmittedItem) => {
-  console.log(row)
+const handleView = (row: TsubmittedItem) => {
+  console.log(row);
   currentRowData.value = row;
   detailDialogVisible.value = true;
 };
@@ -359,10 +345,10 @@ const handleDelete = (row: any) => {
       cancelButtonText: "取消",
       type: "warning",
     }
-  ).then(async() => {
-    await delSubmitFormAPI(row.id)
+  ).then(async () => {
+    await delSubmitFormAPI(row.id);
     notification("删除成功", `${row.title} 数据删除成功`, "success");
-    getSubmitFormData()
+    getSubmitFormData();
   });
 };
 
@@ -380,7 +366,6 @@ const handleCurrentChange = (page: number) => {
   pagination.pageNum = page;
   getSubmitFormData();
 };
-
 </script>
 
 <style lang="scss" scoped>
