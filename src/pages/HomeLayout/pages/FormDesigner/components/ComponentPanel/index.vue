@@ -98,6 +98,7 @@ const layoutComponents = [
 // 拖拽开始
 const handleDragStart = (event: DragEvent, component: any) => {
   if (event.dataTransfer) {
+    // 设置拖拽数据 component 是拖拽的组件数据 画布区域会通过这个数据渲染组件
     event.dataTransfer.setData("application/json", JSON.stringify(component));
     event.dataTransfer.effectAllowed = "copy";
   }

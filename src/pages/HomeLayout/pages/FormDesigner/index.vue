@@ -4,7 +4,7 @@
     <TitleDialog v-model="showTitleDialog" v-model:form-config="formConfig" />
 
     <!-- 主体区域 -->
-    <div class="designer-body flex h-full">
+    <div class="flex h-full">
       <!-- 左侧组件面板 -->
       <ComponentPanel />
 
@@ -34,12 +34,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
-import { ElMessage } from 'element-plus'
-import ComponentPanel from './components/ComponentPanel/index.vue'
-import DesignCanvas from './components/DesignCanvas/index.vue'
-import PropertyPanel from './components/PropertyPanel/index.vue'
-import TitleDialog from './components/TitleDialog/index.vue'
+import { ref, reactive, computed, watch } from "vue";
+import { ElMessage } from "element-plus";
+import ComponentPanel from "./components/ComponentPanel/index.vue";
+import DesignCanvas from "./components/DesignCanvas/index.vue";
+import PropertyPanel from "./components/PropertyPanel/index.vue";
+import TitleDialog from "./components/TitleDialog/index.vue";
 
 // 标题设置弹窗
 const showTitleDialog = ref(true);
@@ -51,7 +51,16 @@ const formConfig = reactive({
   labelWidth: "100px",
   size: "default",
 });
-
+watch(
+  () => formConfig,
+  (newVal) => {
+    console.log("formConfig", newVal);
+  },
+  {
+    deep: true,
+    immediate: true,
+  }
+);
 // 选中的组件
 const selectedItemId = ref<string | null>(null);
 const selectedItem = computed(() => {

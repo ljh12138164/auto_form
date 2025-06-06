@@ -1,11 +1,19 @@
 <template>
   <div class="form-items-container">
-    <div class="form-items-list space-y-4">
+    <el-form 
+      :model="formData" 
+      class="form-items-list"
+    >
+    <!--    mb-2 -->
       <div
         v-for="(element, index) in modelValue"
         :key="element.id"
-        class="form-item-wrapper relative p-4 border-2 border-transparent rounded-lg hover:border-blue-300 transition-all duration-200 group"
-        :class="{ 'border-blue-500 bg-blue-50': selectedItemId === element.id }"
+        
+        class="form-item-wrapper p-3 relative border-transparent border-2 rounded-lg hover:border-blue-300 transition-all duration-200 group"
+        :class="{ 
+          'border-blue-500 bg-blue-50 transform scale-105 shadow-md': selectedItemId === element.id,
+          'hover:shadow-sm': selectedItemId !== element.id 
+        }"
         @click="$emit('selectItem', element)"
         draggable="true"
         @dragstart="handleItemDragStart($event, element, index)"
@@ -15,27 +23,64 @@
         <!-- 表单项渲染 -->
         <el-form-item
           :label="element.label"
+          :prop="element.field"
           :required="element.required"
           class="mb-0"
         >
-          <component
-            :is="getComponentByType(element.type)"
-            v-bind="element.props"
-            :model-value="element.defaultValue"
-            :placeholder="element.placeholder"
-            :disabled="true"
-            class="w-full"
-          >
-            <!-- 选择器选项 -->
-            <template v-if="element.type === 'select'">
+          <!-- 输入框 -->
+          <template v-if="element.type === 'input'">
+            <el-input
+              :model-value="element.defaultValue"
+              :placeholder="element.placeholder"
+              class="w-full"
+              @click.stop
+            />
+          </template>
+          
+          <!-- 选择器 -->
+          <template v-else-if="element.type === 'select'">
+            <el-select
+              :model-value="element.defaultValue"
+              :placeholder="element.placeholder"
+              class="w-full"
+              @click.stop
+            >
               <el-option
-                v-for="option in element.options"
+                v-for="option in element.options || []"
                 :key="option.value"
                 :label="option.label"
                 :value="option.value"
               />
-            </template>
-          </component>
+            </el-select>
+          </template>
+          
+          <!-- 日期选择器 -->
+          <template v-else-if="element.type === 'date'">
+            <el-date-picker
+              :model-value="element.defaultValue"
+              :placeholder="element.placeholder"
+              class="w-full"
+              @click.stop
+            />
+          </template>
+          
+          <!-- 开关 -->
+          <template v-else-if="element.type === 'switch'">
+            <el-switch
+              :model-value="element.defaultValue"
+              @click.stop
+            />
+          </template>
+          
+          <!-- 其他组件（备用） -->
+          <template v-else>
+            <el-input
+              :model-value="element.defaultValue"
+              :placeholder="element.placeholder || '请输入内容'"
+              class="w-full"
+              @click.stop
+            />
+          </template>
         </el-form-item>
 
         <!-- 操作按钮 -->
@@ -52,12 +97,12 @@
           </el-button-group>
         </div>
       </div>
-    </div>
+    </el-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { CopyDocument, Delete } from "@element-plus/icons-vue";
 
 interface Props {
@@ -73,6 +118,17 @@ const emits = defineEmits([
   "change",
   "update:modelValue",
 ]);
+
+// 表单数据对象
+const formData = computed(() => {
+  const data: Record<string, any> = {};
+  props.modelValue.forEach(item => {
+    if (item.field) {
+      data[item.field] = item.defaultValue;
+    }
+  });
+  return data;
+});
 
 // 拖拽相关
 const draggedItem = ref<any>(null);
@@ -110,16 +166,7 @@ const handleItemDrop = (event: DragEvent, dropIndex: number) => {
   draggedIndex.value = -1;
 };
 
-// 根据类型获取组件
-const getComponentByType = (type: string) => {
-  const componentMap: Record<string, string> = {
-    input: "el-input",
-    select: "el-select",
-    date: "el-date-picker",
-    switch: "el-switch",
-  };
-  return componentMap[type] || "el-input";
-};
+// 可以移除 getComponentByType 函数，因为现在直接在模板中处理
 </script>
 
 <style lang="scss" scoped>
@@ -136,5 +183,8 @@ const getComponentByType = (type: string) => {
 .item-actions {
   opacity: 0;
   transition: opacity 0.2s;
+}
+:deep(.el-form-item) {
+  margin: 0;
 }
 </style>
