@@ -1,6 +1,6 @@
 <template>
   <div class="component-config">
-    <el-form label-width="80px" size="small">
+    <el-form label-width="100px" size="default">
       <el-form-item label="字段标签">
         <el-input v-model="modelValue.label" />
       </el-form-item>
@@ -10,12 +10,61 @@
       <el-form-item label="字段宽度">
         <el-input v-model="modelValue.labelWidth" placeholder="如:100px" />
       </el-form-item>
-      <el-form-item label="占位提示" v-if="!['switch'].includes(modelValue.type)">
+      <el-form-item label="占位提示" v-if="!['switch', 'radio', 'checkbox', 'select'].includes(modelValue.type)">
         <el-input v-model="modelValue.placeholder" />
       </el-form-item>
       <el-form-item label="是否必填" v-if="!['switch'].includes(modelValue.type)">
         <el-switch v-model="modelValue.required" />
       </el-form-item>
+      
+      <!-- 校验配置 -->
+      <template v-if="modelValue.required && !['switch'].includes(modelValue.type)">
+        <el-form-item label="必填提示">
+          <el-input 
+            v-model="modelValue.requiredMessage" 
+            placeholder="请输入必填时的提示文字"
+          />
+        </el-form-item>
+      </template>
+      
+      <!-- 通用校验规则 - 只对输入框和文本域有效 -->
+      <template v-if="['input', 'textarea'].includes(modelValue.type)">
+        <el-form-item label="校验规则">
+          <el-select v-model="modelValue.validationType" placeholder="选择校验类型" clearable>
+            <el-option label="无" value="" />
+            <el-option label="邮箱" value="email" />
+            <el-option label="手机号" value="phone" />
+            <el-option label="身份证" value="idCard" />
+            <el-option label="网址" value="url" />
+            <el-option label="自定义正则" value="custom" />
+          </el-select>
+        </el-form-item>
+        
+        <!-- 自定义正则表达式 -->
+        <el-form-item label="正则表达式" v-if="modelValue.validationType === 'custom'">
+          <el-input 
+            v-model="modelValue.customRegex" 
+            placeholder="请输入正则表达式"
+          />
+        </el-form-item>
+        
+        <!-- 校验失败提示 -->
+        <el-form-item label="校验提示" v-if="modelValue.validationType">
+          <el-input 
+            v-model="modelValue.validationMessage" 
+            placeholder="校验失败时的提示文字"
+          />
+        </el-form-item>
+        
+        <!-- 字符长度限制 -->
+        <el-form-item label="最小长度">
+          <el-input-number v-model="modelValue.minLength" :min="0" placeholder="最小字符数" />
+        </el-form-item>
+        <el-form-item label="最大长度">
+          <el-input-number v-model="modelValue.maxLength" :min="0" placeholder="最大字符数" />
+        </el-form-item>
+      </template>
+      
       <el-form-item label="默认值" v-if="!['switch', 'upload'].includes(modelValue.type)">
         <el-input placeholder="请输入默认值" v-if="modelValue.type !== 'number'" v-model="modelValue.defaultValue" />
         <el-input v-else placeholder="请输入数字" v-model="modelValue.defaultValue" type="number" />
@@ -80,7 +129,7 @@
                   :model-value="modelValue.defaultValue"
                   :label="option.value"
                   @change="setDefaultValue(option.value)"
-                  size="small"
+                  size="default"
                 >
                 </el-radio>
                 <!-- 多选框类型使用 checkbox -->
@@ -88,7 +137,7 @@
                   v-else-if="modelValue.type === 'checkbox'"
                   :model-value="isDefaultSelected(option.value)"
                   @change="toggleDefaultValue(option.value)"
-                  size="small"
+                  size="default"
                 >
                 </el-checkbox>
               </div>
@@ -97,7 +146,7 @@
               <el-input
                 v-model="option.label"
                 placeholder="选项文本"
-                size="small"
+                size="default"
                 class="flex-1"
               />
               
@@ -105,25 +154,24 @@
               <el-input
                 v-model="option.value"
                 placeholder="选项值"
-                size="small"
+                size="default"
                 class="flex-1"
                 @input="updateOptionValue(index, $event)"
               />
               
               <!-- 删除按钮 -->
-              <el-button @click="removeOption(index)" size="small" class="flex-shrink-0">
+              <el-button @click="removeOption(index)" size="default" class="flex-shrink-0">
                 <el-icon><Delete /></el-icon>
               </el-button>
             </div>
             
             <!-- 添加选项按钮 -->
-            <el-button @click="addOption" size="small" class="w-full">
+            <el-button @click="addOption" size="default" class="w-full">
               添加选项
             </el-button>
             
-            
             <!-- 默认值提示 -->
-            <div class="text-xs text-gray-500 mt-2">
+            <div class="text-sm text-gray-500 mt-2">
               <template v-if="modelValue.type === 'radio' || modelValue.type === 'select'">
                 点击前面的圆圈选择默认选中项
               </template>
@@ -240,5 +288,26 @@ const updateOptionValue = (index: number, newValue: string) => {
 <style scoped>
 .space-y-2 > * + * {
   margin-top: 0.5rem;
+}
+
+.component-config {
+  font-size: 14px;
+}
+
+.component-config :deep(.el-form-item__label) {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.component-config :deep(.el-input__inner) {
+  font-size: 14px;
+}
+
+.component-config :deep(.el-select .el-input__inner) {
+  font-size: 14px;
+}
+
+.component-config :deep(.el-input-number .el-input__inner) {
+  font-size: 14px;
 }
 </style>

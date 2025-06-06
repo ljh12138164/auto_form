@@ -1,11 +1,9 @@
 <template>
   <div class="form-config">
-    <el-form label-width="80px" size="small">
+    <el-form label-width="100px" size="default" style="font-size: 16px;">
       <el-form-item label="表单标题">
         <el-input
           v-model="modelValue.title"
-          @click="$emit('editTitle')"
-          readonly
         />
       </el-form-item>
       <el-form-item label="表单描述">

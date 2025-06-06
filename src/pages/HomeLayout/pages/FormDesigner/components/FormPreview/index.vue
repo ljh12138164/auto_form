@@ -17,6 +17,7 @@
         <el-form 
           ref="previewFormRef"
           :model="formData" 
+          :rules="formRules"
           :label-width="formConfig.labelWidth"
           :size="formConfig.size"
           class="preview-form"
@@ -249,6 +250,205 @@ const handleReset = () => {
 }
 
 // 提交表单
+// const handleSubmit = async () => {
+//   try {
+//     // 表单验证
+//     await previewFormRef.value?.validate()
+    
+//     submitting.value = true
+    
+//     // 模拟提交请求
+//     await new Promise(resolve => setTimeout(resolve, 1500))
+    
+//     // 构造提交数据
+//     const submitData = {
+//       formTitle: props.formConfig.title,
+//       formDescription: props.formConfig.description,
+//       submitTime: new Date().toISOString(),
+//       formData: { ...formData }
+//     }
+    
+//     console.log('表单提交数据:', submitData)
+    
+//     ElMessage.success('表单提交成功！')
+    
+//     // 提交成功后可以选择关闭预览或重置表单
+//     setTimeout(() => {
+//       ElMessageBox.confirm('表单提交成功！是否继续填写？', '提示', {
+//         confirmButtonText: '继续填写',
+//         cancelButtonText: '关闭预览',
+//         type: 'success'
+//       }).then(() => {
+//         handleReset()
+//       }).catch(() => {
+//         // 关闭预览
+//         // $emit('close')
+//       })
+//     }, 500)
+    
+//   } catch (error) {
+//     console.error('表单验证失败:', error)
+//     ElMessage.error('请检查表单填写是否正确')
+//   } finally {
+//     submitting.value = false
+//   }
+// }
+
+// 生成表单验证规则
+const formRules = computed(() => {
+  const rules: Record<string, any[]> = {}
+  
+  props.formItems.forEach(item => {
+    const fieldRules: any[] = []
+    
+    // 必填验证
+    if (item.required) {
+      const requiredRule = {
+        required: true,
+        message: item.requiredMessage || `请${getActionText(item.type)}${item.label}`,
+        trigger: getTriggerType(item.type)
+      }
+      fieldRules.push(requiredRule)
+    }
+    
+    // 长度验证
+    if (['input', 'textarea'].includes(item.type)) {
+      if (item.minLength !== undefined && item.minLength > 0) {
+        fieldRules.push({
+          min: item.minLength,
+          message: `${item.label}最少输入${item.minLength}个字符`,
+          trigger: 'blur'
+        })
+      }
+      if (item.maxLength !== undefined && item.maxLength > 0) {
+        fieldRules.push({
+          max: item.maxLength,
+          message: `${item.label}最多输入${item.maxLength}个字符`,
+          trigger: 'blur'
+        })
+      }
+    }
+    
+    // 类型验证
+    if (item.validationType) {
+      const validator = getValidator(item.validationType, item.customRegex)
+      if (validator) {
+        fieldRules.push({
+          validator,
+          message: item.validationMessage || getDefaultValidationMessage(item.validationType),
+          trigger: 'blur'
+        })
+      }
+    }
+    
+    // 数字范围验证
+    if (item.type === 'number') {
+      if (item.min !== undefined) {
+        fieldRules.push({
+          type: 'number',
+          min: item.min,
+          message: `${item.label}不能小于${item.min}`,
+          trigger: 'blur'
+        })
+      }
+      if (item.max !== undefined) {
+        fieldRules.push({
+          type: 'number',
+          max: item.max,
+          message: `${item.label}不能大于${item.max}`,
+          trigger: 'blur'
+        })
+      }
+    }
+    
+    if (fieldRules.length > 0) {
+      rules[item.field] = fieldRules
+    }
+  })
+  
+  return rules
+})
+
+// 获取操作文本
+const getActionText = (type: string) => {
+  const actionMap: Record<string, string> = {
+    'select': '选择',
+    'radio': '选择',
+    'checkbox': '选择',
+    'upload': '上传',
+    'date': '选择'
+  }
+  return actionMap[type] || '输入'
+}
+
+// 获取触发类型
+const getTriggerType = (type: string) => {
+  const triggerMap: Record<string, string> = {
+    'select': 'change',
+    'radio': 'change',
+    'checkbox': 'change',
+    'switch': 'change',
+    'date': 'change',
+    'upload': 'change'
+  }
+  return triggerMap[type] || 'blur'
+}
+
+// 获取验证器
+const getValidator = (type: string, customRegex?: string) => {
+  const patterns: Record<string, RegExp> = {
+    email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+    phone: /^1[3-9]\d{9}$/,
+    idCard: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/,
+    url: /^(https?:\/\/)?(([\da-z\.-]+)\.([a-z\.]{2,6})|([\da-f]{1,4}:){7}[\da-f]{1,4})([\/?].*)?$/i
+  }
+  
+  let pattern: RegExp | undefined
+  
+  if (type === 'custom' && customRegex) {
+    try {
+      pattern = new RegExp(customRegex)
+    } catch (e) {
+      // 正则表达式格式错误，返回null
+      return null
+    }
+  } else {
+    pattern = patterns[type]
+  }
+  
+  // 如果没有找到对应的模式，返回null
+  if (!pattern) {
+    return null
+  }
+  
+  // 返回验证函数
+  return (rule: any, value: any, callback: any) => {
+    if (!value) {
+      callback()
+      return
+    }
+    
+    if (!pattern!.test(value)) {
+      callback(new Error())
+    } else {
+      callback()
+    }
+  }
+}
+
+// 获取默认验证消息
+const getDefaultValidationMessage = (type: string) => {
+  const messages: Record<string, string> = {
+    email: '请输入正确的邮箱地址',
+    phone: '请输入正确的手机号码',
+    idCard: '请输入正确的身份证号码',
+    url: '请输入正确的网址',
+    custom: '格式不正确'
+  }
+  return messages[type] || '格式不正确'
+}
+
+// 提交表单
 const handleSubmit = async () => {
   try {
     // 表单验证
@@ -259,19 +459,34 @@ const handleSubmit = async () => {
     // 模拟提交请求
     await new Promise(resolve => setTimeout(resolve, 1500))
     
-    // 构造提交数据
+    // 构造详细的提交数据
     const submitData = {
-      formTitle: props.formConfig.title,
-      formDescription: props.formConfig.description,
-      submitTime: new Date().toISOString(),
-      formData: { ...formData }
+      // 表单基本信息
+      formInfo: {
+        title: props.formConfig.title,
+        description: props.formConfig.description,
+        submitTime: new Date().toISOString(),
+        totalFields: props.formItems.length
+      },
+      // 字段定义
+      fieldDefinitions: props.formItems.map(item => ({
+        field: item.field,
+        label: item.label,
+        type: item.type,
+        required: item.required,
+        options: item.options || null
+      })),
+      // 用户填写的数据
+      formData: { ...formData },
+      // 带显示值的数据（用于展示）
+      displayData: getDisplayData()
     }
     
     console.log('表单提交数据:', submitData)
     
     ElMessage.success('表单提交成功！')
     
-    // 提交成功后可以选择关闭预览或重置表单
+    // 提交成功后的处理
     setTimeout(() => {
       ElMessageBox.confirm('表单提交成功！是否继续填写？', '提示', {
         confirmButtonText: '继续填写',
@@ -280,8 +495,7 @@ const handleSubmit = async () => {
       }).then(() => {
         handleReset()
       }).catch(() => {
-        // 关闭预览
-        // $emit('close')
+        // 用户选择关闭预览
       })
     }, 500)
     
@@ -293,24 +507,35 @@ const handleSubmit = async () => {
   }
 }
 
-// 生成表单验证规则
-const formRules = computed(() => {
-  const rules: Record<string, any[]> = {}
+// 获取显示数据（处理选择类型的显示值）
+const getDisplayData = () => {
+  const displayData: Record<string, any> = {}
   
   props.formItems.forEach(item => {
-    if (item.required) {
-      rules[item.field] = [
-        {
-          required: true,
-          message: `请${item.type === 'select' || item.type === 'radio' || item.type === 'checkbox' ? '选择' : '输入'}${item.label}`,
-          trigger: item.type === 'select' || item.type === 'radio' || item.type === 'checkbox' ? 'change' : 'blur'
-        }
-      ]
+    const value = formData[item.field]
+    
+    if (['select', 'radio'].includes(item.type) && item.options) {
+      const option = item.options.find((opt: any) => opt.value === value)
+      displayData[item.field] = {
+        value,
+        label: option?.label || value
+      }
+    } else if (item.type === 'checkbox' && item.options && Array.isArray(value)) {
+      displayData[item.field] = {
+        value,
+        labels: value.map((v: any) => {
+          const option = item.options.find((opt: any) => opt.value === v)
+          return option?.label || v
+        })
+      }
+    } else {
+      displayData[item.field] = value
     }
   })
   
-  return rules
-})
+  return displayData
+}
+// ... existing code ...
 
 // 在模板中使用验证规则
 // <el-form :rules="formRules" ...>
