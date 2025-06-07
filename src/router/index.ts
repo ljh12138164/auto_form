@@ -33,7 +33,19 @@ const routes = [
       {
         path: "form-designer",
         name: "FormDesigner",
-        component: () => import("@/pages/HomeLayout/pages/FormDesigner/index.vue"),
+        
+        children:[
+          {
+            path: "",
+            name: "selectForm",
+            component: () => import("@/pages/HomeLayout/pages/FormDesigner/pages/SelectForm/index.vue"),
+          },
+          {
+            path: "designer",
+            name: "FormDesignerPage",
+            component: () => import("@/pages/HomeLayout/pages/FormDesigner/pages/FormDesigner/index.vue"),
+          }
+        ]
       },
       {
         path: "form-management",
