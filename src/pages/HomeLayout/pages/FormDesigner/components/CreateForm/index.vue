@@ -10,11 +10,9 @@
           class="form-name-input"
           maxlength="50"
           show-word-limit
-          @keyup.enter="handleCreate"
         />
         <el-button
           type="primary"
-          @click="handleCreate"
           :loading="loading"
           :disabled="!newFormName.trim()"
         >
@@ -53,10 +51,10 @@
             <p class="form-desc">{{ form.description || "暂无描述" }}</p>
             <div class="form-meta">
               <span class="create-time"
-                >创建时间：{{ formatDate(form.createTime) }}</span
+                >创建时间：{{ form.createTime }}</span
               >
               <span class="update-time"
-                >更新时间：{{ formatDate(form.updateTime) }}</span
+                >更新时间：{{ form.updateTime }}</span
               >
             </div>
           </div>
@@ -71,17 +69,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { FormItem, getCreateFormAPI } from "@/api";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { onMounted, ref } from "vue";
 
-interface FormItem {
-  id: string;
-  title: string;
-  description?: string;
-  createTime: string;
-  updateTime: string;
-}
+
 
 // 定义事件
 const emit = defineEmits<{
@@ -92,62 +84,16 @@ const loading = ref(false);
 const newFormName = ref("");
 const formList = ref<FormItem[]>([]);
 
-// 模拟数据，实际项目中从API获取
-const mockForms: FormItem[] = [
-  {
-    id: "1",
-    title: "用户反馈表",
-    description: "收集用户对产品的反馈意见",
-    createTime: "2024-01-15 10:30:00",
-    updateTime: "2024-01-16 14:20:00",
-  },
-  {
-    id: "2",
-    title: "员工信息登记表",
-    description: "新员工入职信息收集",
-    createTime: "2024-01-10 09:15:00",
-    updateTime: "2024-01-12 16:45:00",
-  },
-];
+const getCreateFormData = async () => { 
+  const res = await getCreateFormAPI()
+  formList.value = res.data;
+  console.log(formList.value);
+  
+};
 
 onMounted(() => {
-  // 模拟加载表单列表
-  formList.value = mockForms;
+  getCreateFormData()
 });
-
-// 创建新表单
-const handleCreate = async () => {
-  if (!newFormName.value.trim()) {
-    ElMessage.warning("请输入表单名称");
-    return;
-  }
-
-  loading.value = true;
-  try {
-    // 模拟API调用
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    const newForm: FormItem = {
-      id: Date.now().toString(),
-      title: newFormName.value.trim(),
-      description: "",
-      createTime: new Date().toLocaleString(),
-      updateTime: new Date().toLocaleString(),
-    };
-
-    formList.value.unshift(newForm);
-    newFormName.value = "";
-
-    ElMessage.success("表单创建成功");
-
-    // 跳转到表单设计器
-    openForm(newForm);
-  } catch (error) {
-    ElMessage.error("创建失败，请重试");
-  } finally {
-    loading.value = false;
-  }
-};
 
 // 打开表单设计器
 const openForm = (form: FormItem) => {
