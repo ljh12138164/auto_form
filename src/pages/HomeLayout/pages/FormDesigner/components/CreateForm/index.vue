@@ -1,41 +1,5 @@
 <template>
   <div class="form-management">
-    <!-- 创建表单区域
-    <div class="create-section">
-      <h2 class="section-title">创建新表单</h2>
-      <div class="create-form">
-        <div class="form-inputs">
-          <el-input
-            v-model="newFormName"
-            placeholder="请输入表单标题"
-            class="form-input"
-            maxlength="50"
-            show-word-limit
-            @keyup.enter="handleCreate"
-          />
-          <el-input
-            v-model="newFormDescription"
-            type="textarea"
-            placeholder="请输入表单描述（可选）"
-            class="form-input"
-            maxlength="200"
-            show-word-limit
-            :rows="3"
-            resize="none"
-          />
-        </div>
-        <el-button
-          type="primary"
-          @click="handleCreate"
-          :loading="loading"
-          :disabled="!newFormName.trim()"
-          class="create-btn"
-        >
-          创建表单
-        </el-button>
-      </div>
-    </div> -->
-
     <!-- 表单列表区域 -->
     <div class="forms-section">
       <h2 class="section-title">我的表单</h2>
@@ -84,18 +48,10 @@
 </template>
 
 <script setup lang="ts">
-import { FormItem, getCreateFormAPI, postCreateFormAPI } from "@/api";
+import { FormItem, getCreateFormAPI } from "@/api";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { onMounted, ref } from "vue";
 
-// 定义事件
-const emit = defineEmits<{
-  'form-selected': [formId: string, formData: any]
-}>();
-
-const loading = ref(false);
-const newFormName = ref("");
-const newFormDescription = ref(""); // 新增表单描述字段
 const formList = ref<FormItem[]>([]);
 
 const getCreateFormData = async () => { 
@@ -108,44 +64,10 @@ onMounted(() => {
   getCreateFormData()
 });
 
-// 创建新表单
-const handleCreate = async () => {
-  if (!newFormName.value.trim()) {
-    ElMessage.warning("请输入表单名称");
-    return;
-  }
-  loading.value = true;
-  try {
-    const data = {
-      title:  newFormName.value,
-      description: newFormDescription.value,
-    }
-    // 模拟API调用
-    await postCreateFormAPI(data)
-    newFormName.value = "";
-    newFormDescription.value = ""; // 清空描述字段
-    await getCreateFormData()
-    ElMessage.success("表单创建成功");
-    // 跳转到表单设计器
-    // openForm(newForm);
-  } catch (error) {
-    ElMessage.error("创建失败，请重试");
-  } finally {
-    loading.value = false;
-  }
-};
 
 // 打开表单设计器
 const openForm = (form: FormItem) => {
   // 触发form-selected事件，传递表单ID和表单数据
-  const formData = {
-    title: form.title,
-    description: form.description || "",
-    labelWidth: "100px",
-    size: "default"
-  };
-  
-  // emit('form-selected', form.id, formData);
   ElMessage.success(`已打开表单：${form.title}`);
 };
 
@@ -153,7 +75,6 @@ const openForm = (form: FormItem) => {
 const editForm = (form: FormItem) => {
   openForm(form);
 };
-
 // 删除表单
 const deleteForm = async (form: FormItem) => {
   try {
