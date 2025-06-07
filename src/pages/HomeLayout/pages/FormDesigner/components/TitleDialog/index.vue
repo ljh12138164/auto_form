@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     :model-value="modelValue"
-    title="设置表单标题"
+    title="修改表单标题"
     width="500px"
     :close-on-click-modal="false"
     @update:model-value="$emit('update:modelValue', $event)"

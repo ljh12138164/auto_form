@@ -1,6 +1,6 @@
 <template>
   <div class="form-management">
-    <!-- 创建表单区域 -->
+    <!-- 创建表单区域
     <div class="create-section">
       <h2 class="section-title">创建新表单</h2>
       <div class="create-form">
@@ -34,7 +34,7 @@
           创建表单
         </el-button>
       </div>
-    </div>
+    </div> -->
 
     <!-- 表单列表区域 -->
     <div class="forms-section">
@@ -145,7 +145,7 @@ const openForm = (form: FormItem) => {
     size: "default"
   };
   
-  emit('form-selected', form.id, formData);
+  // emit('form-selected', form.id, formData);
   ElMessage.success(`已打开表单：${form.title}`);
 };
 
