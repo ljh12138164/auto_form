@@ -4,17 +4,32 @@
     <div class="create-section">
       <h2 class="section-title">创建新表单</h2>
       <div class="create-form">
-        <el-input
-          v-model="newFormName"
-          placeholder="请输入表单名称"
-          class="form-name-input"
-          maxlength="50"
-          show-word-limit
-        />
+        <div class="form-inputs">
+          <el-input
+            v-model="newFormName"
+            placeholder="请输入表单标题"
+            class="form-input"
+            maxlength="50"
+            show-word-limit
+            @keyup.enter="handleCreate"
+          />
+          <el-input
+            v-model="newFormDescription"
+            type="textarea"
+            placeholder="请输入表单描述（可选）"
+            class="form-input"
+            maxlength="200"
+            show-word-limit
+            :rows="3"
+            resize="none"
+          />
+        </div>
         <el-button
           type="primary"
+          @click="handleCreate"
           :loading="loading"
           :disabled="!newFormName.trim()"
+          class="create-btn"
         >
           创建表单
         </el-button>
@@ -51,10 +66,10 @@
             <p class="form-desc">{{ form.description || "暂无描述" }}</p>
             <div class="form-meta">
               <span class="create-time"
-                >创建时间：{{ form.createTime }}</span
+                >创建时间：{{ formatDate(form.createTime) }}</span
               >
               <span class="update-time"
-                >更新时间：{{ form.updateTime }}</span
+                >更新时间：{{ formatDate(form.updateTime) }}</span
               >
             </div>
           </div>
@@ -69,11 +84,9 @@
 </template>
 
 <script setup lang="ts">
-import { FormItem, getCreateFormAPI } from "@/api";
+import { FormItem, getCreateFormAPI, postCreateFormAPI } from "@/api";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { onMounted, ref } from "vue";
-
-
 
 // 定义事件
 const emit = defineEmits<{
@@ -82,18 +95,45 @@ const emit = defineEmits<{
 
 const loading = ref(false);
 const newFormName = ref("");
+const newFormDescription = ref(""); // 新增表单描述字段
 const formList = ref<FormItem[]>([]);
 
 const getCreateFormData = async () => { 
   const res = await getCreateFormAPI()
   formList.value = res.data;
   console.log(formList.value);
-  
 };
 
 onMounted(() => {
   getCreateFormData()
 });
+
+// 创建新表单
+const handleCreate = async () => {
+  if (!newFormName.value.trim()) {
+    ElMessage.warning("请输入表单名称");
+    return;
+  }
+  loading.value = true;
+  try {
+    const data = {
+      title:  newFormName.value,
+      description: newFormDescription.value,
+    }
+    // 模拟API调用
+    await postCreateFormAPI(data)
+    newFormName.value = "";
+    newFormDescription.value = ""; // 清空描述字段
+    await getCreateFormData()
+    ElMessage.success("表单创建成功");
+    // 跳转到表单设计器
+    // openForm(newForm);
+  } catch (error) {
+    ElMessage.error("创建失败，请重试");
+  } finally {
+    loading.value = false;
+  }
+};
 
 // 打开表单设计器
 const openForm = (form: FormItem) => {
@@ -167,13 +207,26 @@ const formatDate = (dateStr: string) => {
 
 .create-form {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: flex-start;
 }
 
-.form-name-input {
+.form-inputs {
   flex: 1;
-  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 500px;
+}
+
+.form-input {
+  width: 100%;
+}
+
+.create-btn {
+  flex-shrink: 0;
+  height: 40px;
+  align-self: flex-start;
 }
 
 .forms-section {
@@ -238,6 +291,13 @@ const formatDate = (dateStr: string) => {
   font-size: 14px;
   margin: 0 0 8px 0;
   color: #909399;
+  line-height: 1.4;
+  max-height: 2.8em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .form-meta {

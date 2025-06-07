@@ -2,6 +2,8 @@
   <div
     class="component-panel w-64 bg-white border-r border-gray-200 flex flex-col"
   >
+    <!-- 返回按钮 -->
+     <el-button type="primary w-20">返回</el-button>
     <div class="panel-header px-4 py-4 border-b border-gray-200">
       <h3 class="font-medium text-gray-800 mb-3">组件库</h3>
     </div>
