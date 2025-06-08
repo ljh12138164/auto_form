@@ -38,13 +38,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed,watch } from "vue";
 import { ElMessage } from "element-plus";
+import { computed, reactive, ref } from "vue";
 import ComponentPanel from "../../components/ComponentPanel/index.vue";
 import DesignCanvas from "../../components/DesignCanvas/index.vue";
+import FormPreview from "../../components/FormPreview/index.vue";
 import PropertyPanel from "../../components/PropertyPanel/index.vue";
 import TitleDialog from "../../components/TitleDialog/index.vue";
-import FormPreview from "../../components/FormPreview/index.vue";
+import { FormItem } from "@/types";
 
 // 弹窗控制
 const showTitleDialog = ref(false);
@@ -54,17 +55,9 @@ const showPreview = ref(false);
 const formConfig = reactive({
   title: "未命名表单",
   description: "",
-  labelWidth: "100px",
-  size: "default",
 });
-const formItems = ref<any[]>([]);
-watch(
-  () => formItems.value,
-  (newValue) => {
-    console.log("表单配置变化:", newValue);
-  },
-  { deep: true }
-);
+
+const formItems = ref<FormItem[]>([]);
 // 选中的组件
 const selectedItemId = ref<string | null>(null);
 const selectedItem = computed(() => {

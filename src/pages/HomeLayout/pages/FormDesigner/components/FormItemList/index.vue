@@ -2,7 +2,7 @@
   <div class="form-items-container">
     <el-form :model="formData" class="form-items-list">
       <div
-        v-for="(element, index) in modelValue"
+        v-for="(element, index) in formItems"
         :key="element.id"
         class="form-item-wrapper p-3 relative border-transparent border-2 rounded-lg hover:border-blue-300 transition-all duration-200 group cursor-move"
         :class="{
@@ -108,24 +108,25 @@ import ElUpload from './components/ElUpload/index.vue'
 import ElInputNumber from './components/ElInputNumber/index.vue'
 import ElRadio from './components/ElRadio/index.vue'
 import ElCheckbox from './components/ElCheckbox/index.vue'
+import { FormItem } from "@/types";
 interface Props {
-  modelValue: any[];
   selectedItemId: string | null;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 const emits = defineEmits([
   "selectItem",
   "copyItem",
   "deleteItem",
   "change",
-  "update:modelValue",
 ]);
-
+const formItems = defineModel<FormItem[]>("form-items", {
+  default: () => [],
+})
 // 表单数据对象
 const formData = computed(() => {
   const data: Record<string, any> = {};
-  props.modelValue.forEach((item) => {
+    formItems.value.forEach((item) => {
     if (item.field) {
       data[item.field] = item.defaultValue;
     }
@@ -227,7 +228,7 @@ const handleItemDrop = (event: DragEvent, dropIndex: number) => {
   );
 
   if (draggedIndex.value !== -1 && draggedIndex.value !== dropIndex) {
-    const items = [...props.modelValue];
+    const items = [...formItems.value];
     const draggedItemData = items.splice(draggedIndex.value, 1)[0];
     items.splice(dropIndex, 0, draggedItemData);
 
@@ -235,8 +236,7 @@ const handleItemDrop = (event: DragEvent, dropIndex: number) => {
       "FormItemList 更新后的数组:",
       items.map((item) => item.label)
     );
-
-    emits("update:modelValue", items);
+    formItems.value = items;
     emits("change", {
       moved: {
         element: draggedItemData,

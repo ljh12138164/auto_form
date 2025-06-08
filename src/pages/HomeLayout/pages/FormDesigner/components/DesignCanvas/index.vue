@@ -51,9 +51,8 @@
 
         <FormItemList 
           v-else
-          :model-value="formItems"
+          v-model:form-items="formItems"
           :selected-item-id="selectedItemId"
-          @update:model-value="handleFormItemsUpdate"
           @select-item="$emit('selectItem', $event)"
           @copy-item="$emit('copyItem', $event)"
           @delete-item="$emit('deleteItem', $event)"
@@ -73,20 +72,7 @@ import { Document, Edit, Plus, View } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 // 导入表单项列表子组件
 import FormItemList from '../FormItemList/index.vue'
-
-// 定义表单项的类型接口
-interface FormItem {
-  id: string
-  type: string
-  label: string
-  field: string
-  placeholder?: string
-  required: boolean
-  defaultValue: any
-  props?: Record<string, any>
-  options?: Array<{ label: string; value: any }>
-}
-
+import { FormItem } from '@/types'
 // 定义组件的 Props 类型接口
 interface Props {
   formConfig: any      // 表单配置对象
@@ -116,12 +102,6 @@ const emits = defineEmits([
 // 拖拽状态：标记是否正在拖拽悬停
 const isDragOver = ref(false)
 
-// 处理 FormItemList 的更新事件
-const handleFormItemsUpdate = (newFormItems: any[]) => {
-  console.log('FormItemList 更新:', newFormItems.map(item => item.label))
-  formItems.value = newFormItems
-}
-
 // 拖拽进入事件处理函数
 const handleDragEnter = (event: DragEvent) => {
   event.preventDefault()  // 阻止默认行为
@@ -132,7 +112,6 @@ const handleDragEnter = (event: DragEvent) => {
 const handleDragLeave = (event: DragEvent) => {
   event.preventDefault()   // 阻止默认行为
   isDragOver.value = false // 设置拖拽悬停状态为 false
-  console.log("handleDragLeave");
 }
 
 // 拖拽经过事件处理函数
@@ -168,7 +147,8 @@ const handleDrop = (event: DragEvent) => {
         required: false,          // 默认非必填
         defaultValue: '',         // 默认值为空
         props: { ...component.defaultProps }, // 复制默认属性
-        options: component.options || []      // 选项数组（用于选择类组件）
+        options: component.options || [],      // 选项数组（用于选择类组件）
+        labelWidth:""
       }
       console.log("newItem",newItem);
       
