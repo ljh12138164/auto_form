@@ -34,10 +34,10 @@
             <p class="form-desc">{{ form.description || "暂无描述" }}</p>
             <div class="form-meta">
               <span class="create-time"
-                >创建时间：{{ formatDate(form.createTime) }}</span
+                >创建时间：{{ form.createTime }}</span
               >
               <span class="update-time"
-                >更新时间：{{ formatDate(form.updateTime) }}</span
+                >更新时间：{{ form.updateTime}}</span
               >
             </div>
           </div>
@@ -56,8 +56,9 @@ import { delCreateFormAPI, FormItem } from "@/api";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { onMounted } from "vue";
 import useCreateStore from "@/stores/modules/createForm";
+import { useRouter } from "vue-router";
 const createStore = useCreateStore();
-
+const router = useRouter();
 onMounted(() => {
   createStore.getCreateFormData();
 });
@@ -65,6 +66,9 @@ onMounted(() => {
 // 打开表单设计器
 const openForm = (form: FormItem) => {
   // 触发form-selected事件，传递表单ID和表单数据
+  router.push({
+    path: "/home/form-designer/designer/"+form.id,
+  })
   ElMessage.success(`已打开表单：${form.title}`);
 };
 
@@ -96,11 +100,6 @@ const deleteForm = async (form: FormItem) => {
   } catch {
     // 用户取消删除
   }
-};
-
-// 格式化日期
-const formatDate = (dateStr: string) => {
-  return dateStr.split(" ")[0]; // 只显示日期部分
 };
 </script>
 

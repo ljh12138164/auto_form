@@ -3,7 +3,7 @@
     class="component-panel w-64 bg-white border-r border-gray-200 flex flex-col"
   >
     <!-- 返回按钮 -->
-     <el-button type="primary w-20">返回</el-button>
+     <el-button type="primary w-20" @click="goBack">返回</el-button>
     <div class="panel-header px-4 py-4 border-b border-gray-200">
       <h3 class="font-medium text-gray-800 mb-3">组件库</h3>
     </div>
@@ -51,20 +51,19 @@
 
 <script setup lang="ts">
 import {
-  EditPen,
-  Select,
   Calendar,
-  Switch,
-  Grid,
-  Postcard,
+  CircleCheck,
   // 添加新的图标
   Document,
-  Upload,
+  EditPen,
   Odometer,
-  CircleCheck,
+  Select,
   Select as SelectIcon,
+  Switch,
+  Upload
 } from "@element-plus/icons-vue";
-
+import {useRouter} from "vue-router"
+const router = useRouter()
 // 基础组件配置
 const basicComponents = [
   {
@@ -147,7 +146,9 @@ const basicComponents = [
 //   { type: "grid", label: "栅格", icon: Grid },
 //   { type: "card", label: "卡片", icon: Postcard },
 // ];
-
+const goBack = ()=>{
+  router.back()  
+}
 // 拖拽开始
 const handleDragStart = (event: DragEvent, component: any) => {
   if (event.dataTransfer) {

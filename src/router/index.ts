@@ -41,7 +41,7 @@ const routes = [
             component: () => import("@/pages/HomeLayout/pages/FormDesigner/pages/SelectForm/index.vue"),
           },
           {
-            path: "designer",
+            path: "designer/:id",
             name: "FormDesignerPage",
             component: () => import("@/pages/HomeLayout/pages/FormDesigner/pages/FormDesigner/index.vue"),
           }
