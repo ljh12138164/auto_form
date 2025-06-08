@@ -96,11 +96,13 @@
 </template>
 
 <script setup lang="ts">
+import { postCreateFormAPI } from "@/api";
 import { Edit, Plus } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import { reactive, ref, useTemplateRef } from "vue";
+import { reactive, ref } from "vue";
 import CreateForm from "../../components/CreateForm/index.vue";
-import { postCreateFormAPI } from "@/api";
+import useCreateStore from "@/stores/modules/createForm";
+const createStore = useCreateStore()
 // 弹窗控制
 const showCreateDialog = ref(false);
 const showFormSelector = ref(false);
@@ -126,6 +128,7 @@ const handleCreateForm = async () => {
     showCreateDialog.value = false;
     newFormData.title = "";
     newFormData.description = "";
+    await createStore.getCreateFormData()
     ElMessage.success("表单创建成功");
     // 跳转到表单设计器
     // openForm(newForm);

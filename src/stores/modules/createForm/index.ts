@@ -1,11 +1,16 @@
+import { FormItem, getCreateFormAPI } from "@/api";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-defineStore('create',()=>{
-    const createFormInfo = ref({
-        title: '',
-        description: '',
-        createTime: '',
-        updateTime: ''
-    })
-})
+const useCreateStore = defineStore("create", () => {
+  const createFormInfo = ref<FormItem[]>([]);
+  const getCreateFormData = async () => {
+    const res = await getCreateFormAPI();
+    createFormInfo.value = res.data;
+  };
+  return {
+    getCreateFormData,
+    createFormInfo
+  }
+});
+export default useCreateStore

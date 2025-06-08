@@ -3,9 +3,9 @@
     <!-- 表单列表区域 -->
     <div class="forms-section">
       <h2 class="section-title">我的表单</h2>
-      <div class="forms-grid" v-if="formList.length > 0">
+      <div class="forms-grid" v-if="createStore.createFormInfo.length > 0">
         <div
-          v-for="form in formList"
+          v-for="form in createStore.createFormInfo"
           :key="form.id"
           class="form-card"
           @click="openForm(form)"
@@ -48,20 +48,14 @@
 </template>
 
 <script setup lang="ts">
-import { FormItem, getCreateFormAPI } from "@/api";
+import { FormItem } from "@/api";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { onMounted, ref } from "vue";
-
-const formList = ref<FormItem[]>([]);
-
-const getCreateFormData = async () => { 
-  const res = await getCreateFormAPI()
-  formList.value = res.data;
-  console.log(formList.value);
-};
+import { onMounted } from "vue";
+import useCreateStore from "@/stores/modules/createForm";
+const createStore = useCreateStore()
 
 onMounted(() => {
-  getCreateFormData()
+  createStore.getCreateFormData()
 });
 
 
@@ -87,12 +81,6 @@ const deleteForm = async (form: FormItem) => {
         type: "warning",
       }
     );
-
-    const index = formList.value.findIndex((f) => f.id === form.id);
-    if (index > -1) {
-      formList.value.splice(index, 1);
-      ElMessage.success("删除成功");
-    }
   } catch {
     // 用户取消删除
   }
