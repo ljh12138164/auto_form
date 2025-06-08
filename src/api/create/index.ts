@@ -1,3 +1,4 @@
 export {default as getCreateFormAPI} from "./getCreateFormAPI"
 export {default as postCreateFormAPI} from "./postCreateFormAPI"
+export {default as delCreateFormAPI} from "./delCreateFormAPI"
 export {type FormItem} from "./getCreateFormAPI"

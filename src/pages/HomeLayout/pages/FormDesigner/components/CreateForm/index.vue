@@ -3,7 +3,11 @@
     <!-- 表单列表区域 -->
     <div class="forms-section">
       <h2 class="section-title">我的表单</h2>
-      <div style="overflow-y: auto;" class="forms-grid h-100" v-if="createStore.createFormInfo.length > 0">
+      <div
+        style="overflow-y: auto"
+        class="forms-grid h-100"
+        v-if="createStore.createFormInfo.length > 0"
+      >
         <div
           v-for="form in createStore.createFormInfo"
           :key="form.id"
@@ -48,16 +52,15 @@
 </template>
 
 <script setup lang="ts">
-import { FormItem } from "@/api";
+import { delCreateFormAPI, FormItem } from "@/api";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { onMounted } from "vue";
 import useCreateStore from "@/stores/modules/createForm";
-const createStore = useCreateStore()
+const createStore = useCreateStore();
 
 onMounted(() => {
-  createStore.getCreateFormData()
+  createStore.getCreateFormData();
 });
-
 
 // 打开表单设计器
 const openForm = (form: FormItem) => {
@@ -80,7 +83,16 @@ const deleteForm = async (form: FormItem) => {
         cancelButtonText: "取消",
         type: "warning",
       }
-    );
+    ).then(async () => {
+      try {
+        await delCreateFormAPI(form.id);
+        ElMessage.success("表单删除成功");
+        await createStore.getCreateFormData();
+      } catch (err) {
+        ElMessage.error("删除失败");
+        return;
+      }
+    });
   } catch {
     // 用户取消删除
   }
