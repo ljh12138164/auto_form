@@ -74,15 +74,32 @@ import { ElMessage } from 'element-plus'
 // 导入表单项列表子组件
 import FormItemList from '../FormItemList/index.vue'
 
+// 定义表单项的类型接口
+interface FormItem {
+  id: string
+  type: string
+  label: string
+  field: string
+  placeholder?: string
+  required: boolean
+  defaultValue: any
+  props?: Record<string, any>
+  options?: Array<{ label: string; value: any }>
+}
+
 // 定义组件的 Props 类型接口
 interface Props {
   formConfig: any      // 表单配置对象
-  formItems: any[]     // 表单项数组
   selectedItemId: string | null  // 当前选中的表单项ID
 }
 
 // 接收父组件传递的 props
-const props = defineProps<Props>()
+defineProps<Props>()
+
+// 使用 defineModel 并添加类型定义
+const formItems = defineModel<FormItem[]>('form-items', {
+  default: () => []
+})
 
 // 定义组件向父组件发射的事件
 const emits = defineEmits([
@@ -94,7 +111,6 @@ const emits = defineEmits([
   'copyItem',         // 复制表单项事件
   'deleteItem',       // 删除表单项事件
   'formItemsChange',  // 表单项变化事件
-  'update:formItems'  // 更新表单项事件（用于 v-model）
 ])
 
 // 拖拽状态：标记是否正在拖拽悬停
@@ -103,7 +119,7 @@ const isDragOver = ref(false)
 // 处理 FormItemList 的更新事件
 const handleFormItemsUpdate = (newFormItems: any[]) => {
   console.log('FormItemList 更新:', newFormItems.map(item => item.label))
-  emits('update:formItems', newFormItems)
+  formItems.value = newFormItems
 }
 
 // 拖拽进入事件处理函数
@@ -145,7 +161,8 @@ const handleDrop = (event: DragEvent) => {
         type: component.type,     // 组件类型
         label: component.label,   // 组件标签
         // 生成字段名：field_ + 序号
-        field: `field_${props.formItems.length + 1}`,
+        // @ts-ignore
+        field: `field_${formItems?.value?.length + 1}`,
         // 设置占位符文本
         placeholder: component.defaultProps?.placeholder || `请输入${component.label}`,
         required: false,          // 默认非必填
@@ -157,10 +174,9 @@ const handleDrop = (event: DragEvent) => {
       
       // 创建新的表单项数组（不修改原数组）
       // const newFormItems = [...props.formItems, newItem]
-      const newFormItems = [...props.formItems].concat( newItem)
-      
+      const newFormItems = [...formItems.value].concat( newItem)
+      formItems.value = newFormItems
       // 向父组件发射更新事件
-      emits('update:formItems', newFormItems)
       // 选中新添加的表单项
       emits('selectItem', newItem)
       
