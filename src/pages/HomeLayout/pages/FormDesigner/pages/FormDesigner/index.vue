@@ -25,6 +25,7 @@
           :selected-item-id="selectedItemId"
           @edit-title="editTitle"
           @preview="handlePreview"
+          @save="handleSave"
           @select-item="handleSelectItem"
           @copy-item="handleCopyItem"
           @delete-item="handleDeleteItem"
@@ -46,13 +47,17 @@ import FormPreview from "../../components/FormPreview/index.vue";
 import PropertyPanel from "../../components/PropertyPanel/index.vue";
 import TitleDialog from "../../components/TitleDialog/index.vue";
 import { FormItem } from "@/types";
-
-// 弹窗控制
+import { postSaveFormAPI, TSaveForm } from "@/api";
+import { useRoute } from "vue-router";
+import { notification } from "@/utils";
+const route = useRoute();
+const paramsId = route.params.id;
+// 弹窗控
 const showTitleDialog = ref(false);
 const showPreview = ref(false);
 
 // 表单配置
-const formConfig = reactive({
+const formConfig = ref({
   title: "未命名表单",
   description: "",
 });
@@ -106,6 +111,20 @@ const handlePreview = () => {
     return;
   }
   showPreview.value = true;
+};
+const handleSave =async () => {
+  const data: TSaveForm = {
+    id: paramsId as string,
+    description: formConfig.value.description,
+    title: formConfig.value.title,
+    form_config: formItems.value,
+  };
+  try {
+    await postSaveFormAPI(data);
+    return notification("保存成功", "", "success")
+  } catch (err) {
+    return notification("保存失败", "", "error")
+  }
 };
 </script>
 

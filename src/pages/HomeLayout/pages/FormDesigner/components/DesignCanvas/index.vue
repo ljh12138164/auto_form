@@ -20,7 +20,7 @@
             预览
           </el-button>
           <!-- 保存按钮，点击时触发 save 事件 -->
-          <el-button size="default" @click="$emit('save')">
+          <el-button size="default" @click="save">
             <el-icon><Document /></el-icon>
             保存
           </el-button>
@@ -78,7 +78,6 @@ interface Props {
   formConfig: any      // 表单配置对象
   selectedItemId: string | null  // 当前选中的表单项ID
 }
-
 // 接收父组件传递的 props
 defineProps<Props>()
 
@@ -98,6 +97,10 @@ const emits = defineEmits([
   'deleteItem',       // 删除表单项事件
   'formItemsChange',  // 表单项变化事件
 ])
+// 保存
+const save = ()=>{
+  emits('save')
+}
 
 // 拖拽状态：标记是否正在拖拽悬停
 const isDragOver = ref(false)

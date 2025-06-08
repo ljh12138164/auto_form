@@ -5,10 +5,10 @@
     width="500px"
     :close-on-click-modal="false"
   >
-    <el-form :model="formData" label-width="100px">
+    <el-form :model="localFormConfig" label-width="100px">
       <el-form-item label="表单标题" required>
         <el-input
-          v-model="formData.title"
+          v-model="localFormConfig.title"
           placeholder="请输入表单标题"
           maxlength="50"
           show-word-limit
@@ -16,7 +16,7 @@
       </el-form-item>
       <el-form-item label="表单描述">
         <el-input
-          v-model="formData.description"
+          v-model="localFormConfig.description"
           type="textarea"
           :rows="3"
           placeholder="请输入表单描述（可选）"
@@ -35,17 +35,9 @@
 <script setup lang="ts">
 import { ElMessage } from "element-plus";
 import { ref, watch } from "vue";
-
-interface Props {
-  formConfig: any;
-}
-
-const props = defineProps<Props>();
-
 // 使用 defineModel 简化双向绑定
 const visible = defineModel<boolean>('visibleValue', { default: false });
 const formData = defineModel<any>('formConfig', { default: () => ({ title: null, description: null }) });
-
 // 本地表单配置，避免直接修改props
 const localFormConfig = ref({
   title: null,
@@ -58,7 +50,7 @@ watch(
   (newVal) => {
     if (newVal) {
       // 深拷贝，避免直接修改原始数据
-      localFormConfig.value = JSON.parse(JSON.stringify(props.formConfig));
+      localFormConfig.value = JSON.parse(JSON.stringify(formData.value));
     }
   },
   { immediate: true }
