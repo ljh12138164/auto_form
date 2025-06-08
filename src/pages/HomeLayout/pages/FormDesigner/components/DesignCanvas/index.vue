@@ -68,7 +68,7 @@
 // 导入 Vue 的响应式 API
 import { ref } from 'vue'
 // 导入 Element Plus 图标组件
-import { View, Document, Upload, Plus, Edit } from '@element-plus/icons-vue'
+import { Document, Edit, Plus, View } from '@element-plus/icons-vue'
 // 导入 Element Plus 消息提示组件
 import { ElMessage } from 'element-plus'
 // 导入表单项列表子组件
@@ -110,7 +110,6 @@ const handleFormItemsUpdate = (newFormItems: any[]) => {
 const handleDragEnter = (event: DragEvent) => {
   event.preventDefault()  // 阻止默认行为
   isDragOver.value = true // 设置拖拽悬停状态为 true
-  console.log("handleDragEnter");
 }
 
 // 拖拽离开事件处理函数
@@ -130,15 +129,15 @@ const handleDragOver = (event: DragEvent) => {
 const handleDrop = (event: DragEvent) => {
   event.preventDefault()   // 阻止默认行为
   isDragOver.value = false // 重置拖拽悬停状态
-  
   // 获取拖拽传递的组件数据
   const componentData = event.dataTransfer?.getData('application/json')
   console.log("handleDrop",componentData);
-  
   if (componentData) {
     try {
       // 解析 JSON 数据得到组件配置
       const component = JSON.parse(componentData)
+      console.log("component",component);
+      
       // 创建新的表单项对象
       const newItem = {
         // 生成唯一ID：时间戳 + 随机字符串
@@ -154,9 +153,12 @@ const handleDrop = (event: DragEvent) => {
         props: { ...component.defaultProps }, // 复制默认属性
         options: component.options || []      // 选项数组（用于选择类组件）
       }
+      console.log("newItem",newItem);
       
       // 创建新的表单项数组（不修改原数组）
-      const newFormItems = [...props.formItems, newItem]
+      // const newFormItems = [...props.formItems, newItem]
+      const newFormItems = [...props.formItems].concat( newItem)
+      
       // 向父组件发射更新事件
       emits('update:formItems', newFormItems)
       // 选中新添加的表单项

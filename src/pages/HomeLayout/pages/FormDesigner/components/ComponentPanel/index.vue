@@ -26,25 +26,6 @@
           </div>
         </div>
       </div>
-
-      <!-- 布局组件 -->
-      <!-- <div class="component-group">
-        <h4 class="text-sm font-medium text-gray-600 mb-3">布局组件</h4>
-        <div class="grid grid-cols-2 gap-3">
-          <div
-            v-for="component in layoutComponents"
-            :key="component.type"
-            class="component-item p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors text-center"
-            draggable="true"
-            @dragstart="handleDragStart($event, component)"
-          >
-            <el-icon class="text-2xl text-gray-600 mb-2">
-              <component :is="component.icon" />
-            </el-icon>
-            <div class="text-xs text-gray-700">{{ component.label }}</div>
-          </div>
-        </div>
-      </div> -->
     </div>
   </div>
 </template>
@@ -53,7 +34,6 @@
 import {
   Calendar,
   CircleCheck,
-  // 添加新的图标
   Document,
   EditPen,
   Odometer,
@@ -141,11 +121,6 @@ const basicComponents = [
   },
 ];
 
-// // 布局组件配置
-// const layoutComponents = [
-//   { type: "grid", label: "栅格", icon: Grid },
-//   { type: "card", label: "卡片", icon: Postcard },
-// ];
 const goBack = ()=>{
   router.back()  
 }
@@ -154,6 +129,7 @@ const handleDragStart = (event: DragEvent, component: any) => {
   if (event.dataTransfer) {
     // 设置拖拽数据 component 是拖拽的组件数据 画布区域会通过这个数据渲染组件
     event.dataTransfer.setData("application/json", JSON.stringify(component));
+    console.log(JSON.stringify(component));
     event.dataTransfer.effectAllowed = "copy";
   }
 };

@@ -3,7 +3,10 @@
     <!-- 表单设计器主界面 -->
     <div class="designer-main h-full">
       <!-- 标题设置弹窗 -->
-      <TitleDialog v-model="showTitleDialog" v-model:form-config="formConfig" />
+      <TitleDialog
+        v-model:visibleValue="showTitleDialog"
+        v-model:formConfig="formConfig"
+      />
       <!-- 表单预览弹窗 -->
       <FormPreview
         v-if="showPreview"
@@ -35,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed,watch } from "vue";
 import { ElMessage } from "element-plus";
 import ComponentPanel from "../../components/ComponentPanel/index.vue";
 import DesignCanvas from "../../components/DesignCanvas/index.vue";
@@ -54,7 +57,14 @@ const formConfig = reactive({
   labelWidth: "100px",
   size: "default",
 });
-
+const formItems = ref<any[]>([]);
+watch(
+  () => formItems.value,
+  (newValue) => {
+    console.log("表单配置变化:", newValue);
+  },
+  { deep: true }
+);
 // 选中的组件
 const selectedItemId = ref<string | null>(null);
 const selectedItem = computed(() => {
@@ -63,7 +73,6 @@ const selectedItem = computed(() => {
   );
 });
 // 表单项列表
-const formItems = ref<any[]>([]);
 // 保留原有的事件处理函数
 const editTitle = () => {
   showTitleDialog.value = true;
