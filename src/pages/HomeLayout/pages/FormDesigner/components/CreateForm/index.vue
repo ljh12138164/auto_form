@@ -3,7 +3,7 @@
     <!-- 表单列表区域 -->
     <div class="forms-section">
       <h2 class="section-title">我的表单</h2>
-      <div class="forms-grid" v-if="createStore.createFormInfo.length > 0">
+      <div style="overflow-y: auto;" class="forms-grid h-100" v-if="createStore.createFormInfo.length > 0">
         <div
           v-for="form in createStore.createFormInfo"
           :key="form.id"
