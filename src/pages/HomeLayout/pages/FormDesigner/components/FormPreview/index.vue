@@ -22,7 +22,7 @@
           class="preview-form"
         >
           <!-- 使用封装的组件渲染表单项 -->
-          <div v-for="(item, index) in formItems" :key="item.id" class="form-item-preview mb-4">
+          <div v-for="item in formItems" :key="item.id" class="form-item-preview mb-4">
             <BaseFormItem 
               :item="item"
               v-model="formData[item.field]"
@@ -53,14 +53,17 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Close } from '@element-plus/icons-vue'
 import BaseFormItem from './components/BaseFormItem/index.vue'
-
+import { postSubmitFormAPI } from '@/api'
+import { useRoute } from 'vue-router'
+const route = useRoute()
+const paramsId = route.params.id
 interface Props {
   formConfig: any
   formItems: any[]
 }
 
 const props = defineProps<Props>()
-defineEmits(['close'])
+const emits = defineEmits(['close'])
 
 const previewFormRef = ref()
 const submitting = ref(false)
@@ -99,51 +102,6 @@ const handleReset = () => {
     ElMessage.success('表单已重置')
   }).catch(() => {})
 }
-
-// 提交表单
-// const handleSubmit = async () => {
-//   try {
-//     // 表单验证
-//     await previewFormRef.value?.validate()
-    
-//     submitting.value = true
-    
-//     // 模拟提交请求
-//     await new Promise(resolve => setTimeout(resolve, 1500))
-    
-//     // 构造提交数据
-//     const submitData = {
-//       formTitle: props.formConfig.title,
-//       formDescription: props.formConfig.description,
-//       submitTime: new Date().toISOString(),
-//       formData: { ...formData }
-//     }
-    
-//     console.log('表单提交数据:', submitData)
-    
-//     ElMessage.success('表单提交成功！')
-    
-//     // 提交成功后可以选择关闭预览或重置表单
-//     setTimeout(() => {
-//       ElMessageBox.confirm('表单提交成功！是否继续填写？', '提示', {
-//         confirmButtonText: '继续填写',
-//         cancelButtonText: '关闭预览',
-//         type: 'success'
-//       }).then(() => {
-//         handleReset()
-//       }).catch(() => {
-//         // 关闭预览
-//         // $emit('close')
-//       })
-//     }, 500)
-    
-//   } catch (error) {
-//     console.error('表单验证失败:', error)
-//     ElMessage.error('请检查表单填写是否正确')
-//   } finally {
-//     submitting.value = false
-//   }
-// }
 
 // 生成表单验证规则
 const formRules = computed(() => {
@@ -298,7 +256,6 @@ const getDefaultValidationMessage = (type: string) => {
   }
   return messages[type] || '格式不正确'
 }
-
 // 提交表单
 const handleSubmit = async () => {
   try {
@@ -306,39 +263,14 @@ const handleSubmit = async () => {
     await previewFormRef.value?.validate()
     
     submitting.value = true
-    
-    // 模拟提交请求
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    // 构造详细的提交数据
-    const submitData = {
-      // 表单基本信息
-      formInfo: {
-        title: props.formConfig.title,
-        description: props.formConfig.description,
-        submitTime: new Date().toISOString(),
-        totalFields: props.formItems.length
-      },
-      // 字段定义
-      fieldDefinitions: props.formItems.map(item => ({
-        field: item.field,
-        label: item.label,
-        type: item.type,
-        required: item.required,
-        options: item.options || null
-      })),
-      // 用户填写的数据
+    const data = {
       formData: { ...formData },
-      // 带显示值的数据（用于展示）
-      displayData: getDisplayData()
+      formId: paramsId
     }
-    
-    console.log('表单提交数据:', submitData)
-    
+    console.log('表单提交数据:', data);
+    await postSubmitFormAPI(data)
     ElMessage.success('表单提交成功！')
-    
     // 提交成功后的处理
-    setTimeout(() => {
       ElMessageBox.confirm('表单提交成功！是否继续填写？', '提示', {
         confirmButtonText: '继续填写',
         cancelButtonText: '关闭预览',
@@ -347,8 +279,8 @@ const handleSubmit = async () => {
         handleReset()
       }).catch(() => {
         // 用户选择关闭预览
+        emits('close')
       })
-    }, 500)
     
   } catch (error) {
     console.error('表单验证失败:', error)
