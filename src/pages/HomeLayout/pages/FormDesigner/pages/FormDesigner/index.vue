@@ -76,6 +76,11 @@
         <ComponentPanel @useTemplate="setTemplate" />
         <!-- 中间设计画布 -->
         <DesignCanvas
+          :saveToHistory="saveToHistory"
+          :can-undo="canUndo"
+          :can-redo="canRedo"
+          @undo="undo"
+          @redo="redo"
           @import="importForm"
           @export="exportForm"
           @clearAll="clearAll"
@@ -139,7 +144,10 @@ const showImportDialog = ref(false);
 
 // 导入相关数据
 const importJsonText = ref("");
-
+// 在 FormDesigner 组件中添加历史记录管理
+const history = ref([]);
+const historyIndex = ref(-1);
+const maxHistorySize = 50; // 最大历史记录数量
 // 表单配置
 const formConfig = ref({
   title: "未命名表单",
@@ -147,7 +155,52 @@ const formConfig = ref({
 });
 
 const formItems = ref<FormItem[]>([]);
+// 保存当前状态到历史记录
+const saveToHistory = () => {
+  const currentState = {
+    formItems: JSON.parse(JSON.stringify(formItems.value)),
+    formConfig: JSON.parse(JSON.stringify(formConfig.value)),
+    timestamp: Date.now(),
+  };
 
+  // 如果当前不在历史记录的末尾，删除后面的记录
+  if (historyIndex.value < history.value.length - 1) {
+    history.value = history.value.slice(0, historyIndex.value + 1);
+  }
+
+  // 添加新的历史记录
+  // @ts-ignore
+  history.value.push(currentState);
+
+  // 限制历史记录数量
+  if (history.value.length > maxHistorySize) {
+    history.value.shift();
+  } else {
+    historyIndex.value++;
+  }
+};
+// 撤销操作
+const undo = () => {
+  if (historyIndex.value > 0) {
+    historyIndex.value--;
+    const state = history.value[historyIndex.value];
+    // @ts-ignore
+    formItems.value = JSON.parse(JSON.stringify(state.formItems));
+    // @ts-ignore
+    formConfig.value = JSON.parse(JSON.stringify(state.formConfig));
+  }
+};
+// 重做操作
+const redo = () => {
+  if (historyIndex.value < history.value.length - 1) {
+    historyIndex.value++;
+    const state = history.value[historyIndex.value];
+    // @ts-ignore
+    formItems.value = JSON.parse(JSON.stringify(state.formItems));
+    // @ts-ignore
+    formConfig.value = JSON.parse(JSON.stringify(state.formConfig));
+  }
+};
 // 数据变更跟踪
 const hasUnsavedChanges = ref(false);
 const originalFormConfig = ref<any>(null);
@@ -204,27 +257,31 @@ const handleImportConfirm = () => {
     // 添加覆盖提示确认
     if (formItems.value.length > 0) {
       ElMessageBox.confirm(
-        '导入新数据将会覆盖当前表单中的所有组件，是否继续？',
-        '确认导入',
+        "导入新数据将会覆盖当前表单中的所有组件，是否继续？",
+        "确认导入",
         {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
         }
-      ).then(() => {
-        // 导入数据
-        formItems.value = jsonData;
-        showImportDialog.value = false;
-        importJsonText.value = "";
-        ElMessage.success(`成功导入 ${jsonData.length} 个表单组件`);
-      }).catch(() => {
-        // 用户取消导入
-      });
+      )
+        .then(() => {
+          // 导入数据
+          formItems.value = jsonData;
+          showImportDialog.value = false;
+          importJsonText.value = "";
+          saveToHistory();
+          ElMessage.success(`成功导入 ${jsonData.length} 个表单组件`);
+        })
+        .catch(() => {
+          // 用户取消导入
+        });
     } else {
       // 如果当前没有表单项，直接导入
       formItems.value = jsonData;
       showImportDialog.value = false;
       importJsonText.value = "";
+      saveToHistory();
       ElMessage.success(`成功导入 ${jsonData.length} 个表单组件`);
     }
   } catch (error) {
@@ -256,6 +313,7 @@ const clearAll = async () => {
     type: "warning",
   }).then(() => {
     formItems.value = [];
+    saveToHistory();
     saveOriginalData();
     return ElMessage.success("清空成功");
   });
@@ -266,10 +324,13 @@ const saveOriginalData = () => {
   originalFormItems.value = JSON.parse(JSON.stringify(formItems.value));
   hasUnsavedChanges.value = false;
 };
-
+// 计算是否可以撤销/重做
+const canUndo = computed(() => historyIndex.value > 0);
+const canRedo = computed(() => historyIndex.value < history.value.length - 1);
 // 表单配置变更处理
 const handleFormConfigChange = () => {
   // TitleDialog 更新时触发
+  saveToHistory();
 };
 // 导出JSON
 const exportForm = () => {
@@ -287,6 +348,7 @@ const setTemplate = (template: TemplateForm) => {
   formItems.value = template.templateConfig;
   formConfig.value.title = template.title;
   formConfig.value.description = template.description;
+  saveToHistory();
   saveOriginalData(); // 保存成功后更新原始数据
 };
 // 保留原有的事件处理函数
@@ -300,6 +362,7 @@ const handleSelectItem = (item: any) => {
 
 const handleFormItemsChange = (event: any) => {
   console.log("表单项顺序变化:", event);
+  saveToHistory();
 };
 
 const handleCopyItem = (item: any) => {
@@ -311,6 +374,7 @@ const handleCopyItem = (item: any) => {
   };
   formItems.value.push(newItem);
   selectedItemId.value = newItem.id;
+  saveToHistory();
   ElMessage.success("组件复制成功");
 };
 
@@ -358,6 +422,7 @@ const getFormData = async () => {
 
     // 保存初始数据
     saveOriginalData();
+    saveToHistory();
   } catch (err) {
     console.log(err);
   }
@@ -506,7 +571,7 @@ onBeforeUnmount(() => {
 .flex.h-full {
   height: 100% !important;
   min-height: 100%;
-  
+
   > * {
     height: 100%;
   }

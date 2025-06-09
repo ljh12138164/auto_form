@@ -50,6 +50,7 @@ declare module 'vue' {
     ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElTextarea: typeof import('element-plus/es')['ElTextarea']
+    ElTooltip: typeof import('element-plus/es')['ElTooltip']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     FormDesigner: typeof import('./src/components/FormDesigner/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
