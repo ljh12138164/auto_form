@@ -159,6 +159,8 @@ const handleDrop = (event: DragEvent) => {
       // const newFormItems = [...props.formItems, newItem]
       const newFormItems = [...formItems.value].concat( newItem)
       formItems.value = newFormItems
+      console.log("newFormItems",newFormItems);
+      
       // 向父组件发射更新事件
       // 选中新添加的表单项
       emits('selectItem', newItem)
