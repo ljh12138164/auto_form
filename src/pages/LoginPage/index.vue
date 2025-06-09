@@ -25,7 +25,7 @@
           <el-input
             v-model="formData.username"
             :prefix-icon="User"
-            placeholder="用户名"
+            :placeholder="isLogin ? '用户名或邮箱' : '用户名'"
             @keyup.enter="handleSubmit"
           />
         </el-form-item>
@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from "vue";
+import { ref, reactive, watch } from "vue";
 import { User, Lock, Message } from "@element-plus/icons-vue";
 import type { FormInstance, FormRules } from "element-plus";
 import { useUserStore } from "@/stores/modules/user";
@@ -117,11 +117,29 @@ const formData = reactive({
 // 验证规则
 const formRules = reactive<FormRules>({
   username: [
-    { required: true, message: "请输入用户名", trigger: "blur" },
+    { required: true, message: isLogin.value ? "请输入用户名或邮箱" : "请输入用户名", trigger: "blur" },
     {
-      min: 3,
-      max: 20,
-      message: "用户名长度应在 3 到 20 个字符之间",
+      validator: (rule, value, callback) => {
+        if (isLogin.value) {
+          // 登录模式：允许用户名或邮箱
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          const isEmail = emailRegex.test(value);
+          const isValidUsername = value.length >= 3 && value.length <= 20;
+          
+          if (!isEmail && !isValidUsername) {
+            callback(new Error("请输入有效的用户名（3-20个字符）或邮箱地址"));
+          } else {
+            callback();
+          }
+        } else {
+          // 注册模式：只允许用户名
+          if (value.length < 3 || value.length > 20) {
+            callback(new Error("用户名长度应在 3 到 20 个字符之间"));
+          } else {
+            callback();
+          }
+        }
+      },
       trigger: "blur",
     },
   ],
@@ -191,6 +209,11 @@ const handleSubmit = async () => {
     }
   });
 };
+// 在 script setup 中添加
+watch(isLogin, () => {
+  // 当登录状态改变时，重新验证用户名字段
+  formRef.value?.validateField('username');
+});
 </script>
 
 <style lang="scss" scoped>
