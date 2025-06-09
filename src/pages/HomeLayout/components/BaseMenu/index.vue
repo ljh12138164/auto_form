@@ -59,13 +59,13 @@ const menuItems = ref([
     path: "/form-management",
     description: "管理我的表单",
   },
-  {
-    index: "4",
-    title: "模板中心",
-    icon: Star,
-    path: "/template-center",
-    description: "表单模板库",
-  },
+  // {
+  //   index: "4",
+  //   title: "模板中心",
+  //   icon: Star,
+  //   path: "/template-center",
+  //   description: "表单模板库",
+  // },
   {
     index: "5",
     title: "数据管理",

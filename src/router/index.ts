@@ -52,11 +52,11 @@ const routes = [
         name: "FormManagement",
         component: () => import("@/pages/HomeLayout/pages/FormManagement/index.vue"),
       },
-      {
-        path: "template-center",
-        name: "TemplateCenter",
-        component: () => import("@/pages/HomeLayout/pages/TemplateCenter/index.vue"),
-      },
+      // {
+      //   path: "template-center",
+      //   name: "TemplateCenter",
+      //   component: () => import("@/pages/HomeLayout/pages/TemplateCenter/index.vue"),
+      // },
       {
         path: "data-management",
         name: "DataManagement",

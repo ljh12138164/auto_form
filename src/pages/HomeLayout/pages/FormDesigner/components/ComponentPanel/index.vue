@@ -3,28 +3,55 @@
     class="component-panel w-64 bg-white border-r border-gray-200 flex flex-col"
   >
     <!-- 返回按钮 -->
-     <el-button type="primary w-20" @click="goBack">返回</el-button>
+    <el-button type="primary w-20" @click="goBack">返回</el-button>
+    
+    <!-- 切换栏 -->
     <div class="panel-header px-4 py-4 border-b border-gray-200">
-      <h3 class="font-medium text-gray-800 mb-3">组件库</h3>
+      <el-tabs v-model="activeTab" class="panel-tabs">
+        <el-tab-pane label="组件库" name="components">
+          <template #label>
+            <span class="tab-label">
+              <el-icon><Grid /></el-icon>
+              组件库
+            </span>
+          </template>
+        </el-tab-pane>
+        <el-tab-pane label="模版库" name="templates">
+          <template #label>
+            <span class="tab-label">
+              <el-icon><Document /></el-icon>
+              模版库
+            </span>
+          </template>
+        </el-tab-pane>
+      </el-tabs>
     </div>
+    
     <div class="panel-body flex-1 overflow-y-auto p-4">
-      <!-- 基础组件 -->
-      <div class="component-group mb-6">
-        <h4 class="text-sm font-medium text-gray-600 mb-3">表单组件</h4>
-        <div class="grid grid-cols-2 gap-3">
-          <div
-            v-for="component in basicComponents"
-            :key="component.type"
-            class="component-item p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors text-center"
-            draggable="true"
-            @dragstart="handleDragStart($event, component)"
-          >
-            <el-icon class="text-2xl text-gray-600 mb-2">
-              <component :is="component.icon" />
-            </el-icon>
-            <div class="text-xs text-gray-700">{{ component.label }}</div>
+      <!-- 组件库内容 -->
+      <div v-if="activeTab === 'components'" class="components-content">
+        <div class="component-group mb-6">
+          <h4 class="text-sm font-medium text-gray-600 mb-3">表单组件</h4>
+          <div class="grid grid-cols-2 gap-3">
+            <div
+              v-for="component in basicComponents"
+              :key="component.type"
+              class="component-item p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors text-center"
+              draggable="true"
+              @dragstart="handleDragStart($event, component)"
+            >
+              <el-icon class="text-2xl text-gray-600 mb-2">
+                <component :is="component.icon" />
+              </el-icon>
+              <div class="text-xs text-gray-700">{{ component.label }}</div>
+            </div>
           </div>
         </div>
+      </div>
+      
+      <!-- 模版库内容 -->
+      <div v-else-if="activeTab === 'templates'" class="templates-content">
+        <TemplateLibrary @use-template="handleUseTemplate" />
       </div>
     </div>
   </div>
@@ -36,16 +63,28 @@ import {
   CircleCheck,
   Document,
   EditPen,
+  Grid,
   Odometer,
   Select,
   Select as SelectIcon,
   Switch,
   Upload
 } from "@element-plus/icons-vue";
-import {useRouter} from "vue-router"
-const router = useRouter()
+import { useRouter } from "vue-router";
+import { ref } from "vue";
+import TemplateLibrary from './components/TemplateLibrary/index.vue'
+import type { FormTemplate } from './data/templates'
+
+const router = useRouter();
+const activeTab = ref('components');
+
+const emit = defineEmits<{
+  useTemplate: [template: FormTemplate]
+}>()
+
 // 基础组件配置
 const basicComponents = [
+  // ... existing code ...
   {
     type: "input",
     label: "输入框",
@@ -121,9 +160,10 @@ const basicComponents = [
   },
 ];
 
-const goBack = ()=>{
-  router.back()  
-}
+const goBack = () => {
+  router.back();
+};
+
 // 拖拽开始
 const handleDragStart = (event: DragEvent, component: any) => {
   if (event.dataTransfer) {
@@ -133,6 +173,13 @@ const handleDragStart = (event: DragEvent, component: any) => {
     event.dataTransfer.effectAllowed = "copy";
   }
 };
+
+// 使用模版
+const handleUseTemplate = (template: FormTemplate) => {
+  console.log('使用模版:', template);
+  // 向父组件传递模版数据
+  emit('useTemplate', template);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -141,6 +188,31 @@ const handleDragStart = (event: DragEvent, component: any) => {
 
   &:active {
     transform: scale(0.95);
+  }
+}
+
+.panel-tabs {
+  :deep(.el-tabs__header) {
+    margin: 0;
+  }
+  
+  :deep(.el-tabs__nav-wrap) {
+    padding: 0;
+  }
+  
+  :deep(.el-tabs__item) {
+    padding: 0 16px;
+    font-size: 14px;
+  }
+}
+
+.tab-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  
+  .el-icon {
+    font-size: 16px;
   }
 }
 </style>
