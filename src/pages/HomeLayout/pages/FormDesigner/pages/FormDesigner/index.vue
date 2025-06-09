@@ -39,17 +39,17 @@
 </template>
 
 <script setup lang="ts">
+import { getFormAPI, postSaveFormAPI, TSaveForm } from "@/api";
+import { FormItem } from "@/types";
+import { notification } from "@/utils";
 import { ElMessage } from "element-plus";
-import { computed, reactive, ref } from "vue";
+import { computed, ref,onMounted } from "vue";
+import { useRoute } from "vue-router";
 import ComponentPanel from "../../components/ComponentPanel/index.vue";
 import DesignCanvas from "../../components/DesignCanvas/index.vue";
 import FormPreview from "../../components/FormPreview/index.vue";
 import PropertyPanel from "../../components/PropertyPanel/index.vue";
 import TitleDialog from "../../components/TitleDialog/index.vue";
-import { FormItem } from "@/types";
-import { postSaveFormAPI, TSaveForm } from "@/api";
-import { useRoute } from "vue-router";
-import { notification } from "@/utils";
 const route = useRoute();
 const paramsId = route.params.id;
 // 弹窗控
@@ -126,6 +126,21 @@ const handleSave =async () => {
     return notification("保存失败", "", "error")
   }
 };
+const getFormData = async () => {
+  try {
+    const res =await getFormAPI(paramsId as string);
+    // @ts-ignore
+    const { title, description, form_config } = res?.data!;
+    formConfig.value.title = title;
+    formConfig.value.description = description;
+    formItems.value = form_config;
+  }catch(err) {
+    console.log(err)
+  }
+}
+onMounted(() => {
+  getFormData()
+})
 </script>
 
 <style lang="scss" scoped>
