@@ -19,12 +19,14 @@
         :model="formData"
         :rules="formRules"
         class="space-y-6"
+        @keyup.enter="handleSubmit"
       >
         <el-form-item prop="username">
           <el-input
             v-model="formData.username"
             :prefix-icon="User"
             placeholder="用户名"
+            @keyup.enter="handleSubmit"
           />
         </el-form-item>
 
@@ -35,6 +37,7 @@
             type="password"
             placeholder="密码"
             show-password
+            @keyup.enter="handleSubmit"
           />
         </el-form-item>
 
@@ -47,6 +50,7 @@
               type="password"
               placeholder="确认密码"
               show-password
+              @keyup.enter="handleSubmit"
             />
           </el-form-item>
 
@@ -55,6 +59,7 @@
               v-model="formData.email"
               :prefix-icon="Message"
               placeholder="电子邮箱"
+              @keyup.enter="handleSubmit"
             />
           </el-form-item>
         </template>
