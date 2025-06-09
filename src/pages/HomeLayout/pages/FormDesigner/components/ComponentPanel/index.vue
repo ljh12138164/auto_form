@@ -73,18 +73,17 @@ import {
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import TemplateLibrary from './components/TemplateLibrary/index.vue'
-import type { FormTemplate } from './data/templates'
+import { TemplateForm } from "@/api";
 
 const router = useRouter();
 const activeTab = ref('components');
 
 const emit = defineEmits<{
-  useTemplate: [template: FormTemplate]
+  useTemplate: [template: TemplateForm]
 }>()
 
 // 基础组件配置
 const basicComponents = [
-  // ... existing code ...
   {
     type: "input",
     label: "输入框",
@@ -175,7 +174,7 @@ const handleDragStart = (event: DragEvent, component: any) => {
 };
 
 // 使用模版
-const handleUseTemplate = (template: FormTemplate) => {
+const handleUseTemplate = (template: TemplateForm) => {
   console.log('使用模版:', template);
   // 向父组件传递模版数据
   emit('useTemplate', template);

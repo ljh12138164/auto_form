@@ -1,0 +1,15 @@
+import { FormItem } from "@/types";
+import { get } from "@/utils";
+
+export interface TemplateForm {
+  id: string;
+  title: string;
+  description: string;
+  usageCount: number;
+  updateTime: string;
+  templateConfig: FormItem[];
+}
+const getTemplateFormAPI = () => {
+  return get<TemplateForm[]>("/template-form");
+};
+export default getTemplateFormAPI;
