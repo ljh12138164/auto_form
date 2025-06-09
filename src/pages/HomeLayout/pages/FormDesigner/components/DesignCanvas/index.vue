@@ -1,7 +1,7 @@
 <template>
   <div class="design-canvas flex-1 flex flex-col bg-white">
     <div class="canvas-header px-6 py-4 border-b border-gray-200 bg-white">
-      <div class="flex items-center justify-between">
+      <div class=" items-center justify-between">
         <div class="flex items-center gap-4">
           <h2 class="text-xl font-semibold text-gray-800 cursor-pointer hover:text-blue-600" @click="$emit('editTitle')">
             {{ formConfig.title }}
@@ -13,9 +13,9 @@
         </div>
         
         <!-- 右侧：操作按钮组 -->
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 mt-2">
           <!-- 保存按钮 - 最重要的操作，放在最前面 -->
-          <el-button type="primary" @click="save">
+          <el-button  type="primary" @click="save">
             <el-icon><DocumentAdd /></el-icon>
             保存
           </el-button>

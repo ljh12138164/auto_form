@@ -12,7 +12,7 @@
           <HomeHeader @logout="logout"></HomeHeader>
         </el-header>
         <!-- 主内容区 -->
-        <el-main class="bg-gray-50 p-6 h-full">
+        <el-main class="bg-gray-white p-6 h-full">
           <div class="bg-white rounded-lg shadow-sm p-6 h-full">
             <RouterView></RouterView>
           </div>

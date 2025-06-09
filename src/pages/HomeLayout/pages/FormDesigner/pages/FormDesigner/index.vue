@@ -15,13 +15,18 @@
         :form-items="formItems"
         @close="showPreview = false"
       />
-      
+
       <!-- 导入JSON弹窗 -->
       <el-dialog
         v-model="showImportDialog"
         title="导入JSON数据"
         width="600px"
-      style="position: fixed;left: 50%; transform: translateX(-50%);top: -100px;"
+        style="
+          position: fixed;
+          left: 50%;
+          transform: translateX(-50%);
+          top: -100px;
+        "
         :close-on-click-modal="false"
       >
         <div class="import-content">
@@ -35,7 +40,8 @@
           />
           <div class="example-section">
             <p class="text-sm text-gray-500 mb-2">示例格式：</p>
-            <pre class="example-json">[
+            <pre class="example-json">
+[
   {
     "id": "field_1",
     "field": "name",
@@ -52,22 +58,25 @@
     "required": true,
     "placeholder": "请输入邮箱地址"
   }
-]</pre>
+]</pre
+            >
           </div>
         </div>
         <template #footer>
           <el-button @click="showImportDialog = false">取消</el-button>
-          <el-button type="primary" @click="handleImportConfirm">导入</el-button>
+          <el-button type="primary" @click="handleImportConfirm"
+            >导入</el-button
+          >
         </template>
       </el-dialog>
-      
+
       <!-- 主体区域 -->
       <div class="flex h-full">
         <!-- 左侧组件面板 -->
         <ComponentPanel @useTemplate="setTemplate" />
         <!-- 中间设计画布 -->
         <DesignCanvas
-        @import="importForm"
+          @import="importForm"
           @export="exportForm"
           @clearAll="clearAll"
           :form-config="formConfig"
@@ -129,7 +138,7 @@ const showUnsavedDialog = ref(false);
 const showImportDialog = ref(false);
 
 // 导入相关数据
-const importJsonText = ref('');
+const importJsonText = ref("");
 
 // 表单配置
 const formConfig = ref({
@@ -154,7 +163,7 @@ const selectedItem = computed(() => {
 });
 // 导入JSON数据
 const importForm = () => {
-  importJsonText.value = '';
+  importJsonText.value = "";
   showImportDialog.value = true;
 };
 
@@ -162,43 +171,45 @@ const importForm = () => {
 const handleImportConfirm = () => {
   try {
     if (!importJsonText.value.trim()) {
-      ElMessage.warning('请输入JSON数据');
+      ElMessage.warning("请输入JSON数据");
       return;
     }
-    
+
     const jsonData = JSON.parse(importJsonText.value);
-    
+
     // 验证数据格式
     if (!Array.isArray(jsonData)) {
-      ElMessage.error('JSON数据格式错误，应该是一个数组');
+      ElMessage.error("JSON数据格式错误，应该是一个数组");
       return;
     }
-    
+
     // 验证每个表单项的基本结构
-    const isValidFormat = jsonData.every(item => 
-      item && 
-      typeof item === 'object' && 
-      item.id && 
-      item.field && 
-      item.label && 
-      item.type
+    const isValidFormat = jsonData.every(
+      (item) =>
+        item &&
+        typeof item === "object" &&
+        item.id &&
+        item.field &&
+        item.label &&
+        item.type
     );
-    
+
     if (!isValidFormat) {
-      ElMessage.error('JSON数据格式错误，每个表单项必须包含 id、field、label、type 字段');
+      ElMessage.error(
+        "JSON数据格式错误，每个表单项必须包含 id、field、label、type 字段"
+      );
       return;
     }
-    
+
     // 导入数据
     formItems.value = jsonData;
     showImportDialog.value = false;
-    importJsonText.value = '';
-    
+    importJsonText.value = "";
+
     ElMessage.success(`成功导入 ${jsonData.length} 个表单组件`);
-    
   } catch (error) {
-    ElMessage.error('JSON格式错误，请检查数据格式');
-    console.error('导入错误:', error);
+    ElMessage.error("JSON格式错误，请检查数据格式");
+    console.error("导入错误:", error);
   }
 };
 // 监听数据变更
@@ -443,7 +454,7 @@ onBeforeUnmount(() => {
     padding: 12px;
     border: 1px solid #e9ecef;
   }
-  
+
   .example-json {
     background-color: #f1f3f4;
     border-radius: 4px;
@@ -453,6 +464,31 @@ onBeforeUnmount(() => {
     margin: 0;
     white-space: pre-wrap;
     word-wrap: break-word;
+  }
+}
+
+.form-designer {
+  /* 精确计算可用高度 */
+  height: calc(100vh - 6rem) !important;
+  min-height: calc(100vh - 6rem);
+  max-height: calc(100vh - 6rem);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.designer-main {
+  flex: 1;
+  min-height: 0; /* 重要：允许flex子项收缩 */
+  height: 100%;
+}
+
+.flex.h-full {
+  height: 100% !important;
+  min-height: 100%;
+  
+  > * {
+    height: 100%;
   }
 }
 </style>
