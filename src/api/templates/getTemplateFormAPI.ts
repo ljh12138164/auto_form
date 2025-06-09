@@ -8,6 +8,7 @@ export interface TemplateForm {
   usageCount: number;
   updateTime: string;
   templateConfig: FormItem[];
+  img:  string;
 }
 const getTemplateFormAPI = () => {
   return get<TemplateForm[]>("/template-form");

@@ -29,7 +29,7 @@
     </div>
 
     <!-- 画布主体区域 -->
-    <div class="canvas-body flex-1 overflow-auto p-8 bg-gray-50">
+    <div class="canvas-body flex-1 p-8 bg-gray-50">
       <!-- 表单画布容器，支持拖拽放置 -->
       <div 
         class="form-canvas bg-white rounded-lg shadow-sm border-2 border-dashed border-gray-300 min-h-[600px] p-8 mx-auto max-w-4xl"

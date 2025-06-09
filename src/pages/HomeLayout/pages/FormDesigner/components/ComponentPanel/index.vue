@@ -6,9 +6,9 @@
     <el-button type="primary w-20" @click="goBack">返回</el-button>
     
     <!-- 切换栏 -->
-    <div class="panel-header px-4 py-4 border-b border-gray-200">
+    <div class="panel-header px-4 py-4 border-b border-gray-200 w-full">
       <el-tabs v-model="activeTab" class="panel-tabs">
-        <el-tab-pane label="组件库" name="components">
+        <el-tab-pane  label="组件库" name="components">
           <template #label>
             <span class="tab-label">
               <el-icon><Grid /></el-icon>
@@ -27,7 +27,7 @@
       </el-tabs>
     </div>
     
-    <div class="panel-body flex-1 overflow-y-auto p-4">
+    <div class="panel-body flex-1 overflow-y-auto p-3">
       <!-- 组件库内容 -->
       <div v-if="activeTab === 'components'" class="components-content">
         <div class="component-group mb-6">
@@ -202,13 +202,22 @@ const handleUseTemplate = (template: TemplateForm) => {
   :deep(.el-tabs__item) {
     padding: 0 16px;
     font-size: 14px;
+    flex: 1;
+    text-align: center;
+  }
+  
+  :deep(.el-tabs__nav) {
+    display: flex;
+    width: 100%;
   }
 }
 
 .tab-label {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+  width: 100%;
   
   .el-icon {
     font-size: 16px;

@@ -18,7 +18,7 @@
       <!-- 主体区域 -->
       <div class="flex h-full">
         <!-- 左侧组件面板 -->
-        <ComponentPanel />
+        <ComponentPanel @useTemplate="setTemplate" />
         <!-- 中间设计画布 -->
         <DesignCanvas
           :form-config="formConfig"
@@ -67,6 +67,7 @@ import DesignCanvas from "../../components/DesignCanvas/index.vue";
 import FormPreview from "../../components/FormPreview/index.vue";
 import PropertyPanel from "../../components/PropertyPanel/index.vue";
 import TitleDialog from "../../components/TitleDialog/index.vue";
+import { TemplateForm } from "@/api";
 
 const route = useRoute();
 const router = useRouter();
@@ -123,7 +124,12 @@ const saveOriginalData = () => {
 const handleFormConfigChange = () => {
   // TitleDialog 更新时触发
 };
-
+const setTemplate = (template: TemplateForm) => {
+  formItems.value = template.templateConfig;
+  formConfig.value.title = template.title;
+  formConfig.value.description = template.description;
+  saveOriginalData(); // 保存成功后更新原始数据
+}
 // 保留原有的事件处理函数
 const editTitle = () => {
   showTitleDialog.value = true;
