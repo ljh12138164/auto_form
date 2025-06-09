@@ -201,12 +201,32 @@ const handleImportConfirm = () => {
       return;
     }
 
-    // 导入数据
-    formItems.value = jsonData;
-    showImportDialog.value = false;
-    importJsonText.value = "";
-
-    ElMessage.success(`成功导入 ${jsonData.length} 个表单组件`);
+    // 添加覆盖提示确认
+    if (formItems.value.length > 0) {
+      ElMessageBox.confirm(
+        '导入新数据将会覆盖当前表单中的所有组件，是否继续？',
+        '确认导入',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      ).then(() => {
+        // 导入数据
+        formItems.value = jsonData;
+        showImportDialog.value = false;
+        importJsonText.value = "";
+        ElMessage.success(`成功导入 ${jsonData.length} 个表单组件`);
+      }).catch(() => {
+        // 用户取消导入
+      });
+    } else {
+      // 如果当前没有表单项，直接导入
+      formItems.value = jsonData;
+      showImportDialog.value = false;
+      importJsonText.value = "";
+      ElMessage.success(`成功导入 ${jsonData.length} 个表单组件`);
+    }
   } catch (error) {
     ElMessage.error("JSON格式错误，请检查数据格式");
     console.error("导入错误:", error);
