@@ -5,7 +5,6 @@
       <div class="preview-header px-6 py-4 border-b border-gray-200 flex justify-between items-center">
         <div>
           <h2 class="text-xl font-semibold text-gray-800">{{ formConfig.title }}</h2>
-          <p v-if="formConfig.description" class="text-sm text-gray-600 mt-1">{{ formConfig.description }}</p>
         </div>
         <el-button @click="$emit('close')" circle>
           <el-icon><Close /></el-icon>
@@ -22,160 +21,12 @@
           :size="formConfig.size"
           class="preview-form"
         >
-          <!-- 渲染表单项 -->
+          <!-- 使用封装的组件渲染表单项 -->
           <div v-for="(item, index) in formItems" :key="item.id" class="form-item-preview mb-4">
-            <!-- 输入框 -->
-            <el-form-item 
-              v-if="item.type === 'input'"
-              :label="item.label"
-              :prop="item.field"
-              :required="item.required"
-            >
-              <el-input 
-                v-model="formData[item.field]"
-                :placeholder="item.placeholder"
-                clearable
-              />
-            </el-form-item>
-            
-            <!-- 文本域 -->
-            <el-form-item 
-              v-else-if="item.type === 'textarea'"
-              :label="item.label"
-              :prop="item.field"
-              :required="item.required"
-            >
-              <el-input 
-                v-model="formData[item.field]"
-                type="textarea"
-                :placeholder="item.placeholder"
-                :rows="item.rows || 3"
-              />
-            </el-form-item>
-            
-            <!-- 数字输入 -->
-            <el-form-item 
-              v-else-if="item.type === 'number'"
-              :label="item.label"
-              :prop="item.field"
-              :required="item.required"
-            >
-              <el-input-number 
-                v-model="formData[item.field]"
-                :placeholder="item.placeholder"
-                :min="item.min"
-                :max="item.max"
-                :step="item.step"
-                :precision="item.precision"
-                style="width: 100%"
-              />
-            </el-form-item>
-            
-            <!-- 选择器 -->
-            <el-form-item 
-              v-else-if="item.type === 'select'"
-              :label="item.label"
-              :prop="item.field"
-              :required="item.required"
-            >
-              <el-select 
-                v-model="formData[item.field]"
-                :placeholder="item.placeholder"
-                style="width: 100%"
-                clearable
-              >
-                <el-option 
-                  v-for="option in item.options"
-                  :key="option.value"
-                  :label="option.label"
-                  :value="option.value"
-                />
-              </el-select>
-            </el-form-item>
-            
-            <!-- 单选框 -->
-            <el-form-item 
-              v-else-if="item.type === 'radio'"
-              :label="item.label"
-              :prop="item.field"
-              :required="item.required"
-            >
-              <el-radio-group v-model="formData[item.field]">
-                <el-radio 
-                  v-for="option in item.options"
-                  :key="option.value"
-                  :label="option.value"
-                >
-                  {{ option.label }}
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-            
-            <!-- 多选框 -->
-            <el-form-item 
-              v-else-if="item.type === 'checkbox'"
-              :label="item.label"
-              :prop="item.field"
-              :required="item.required"
-            >
-              <el-checkbox-group v-model="formData[item.field]">
-                <el-checkbox 
-                  v-for="option in item.options"
-                  :key="option.value"
-                  :label="option.value"
-                >
-                  {{ option.label }}
-                </el-checkbox>
-              </el-checkbox-group>
-            </el-form-item>
-            
-            <!-- 日期选择 -->
-            <el-form-item 
-              v-else-if="item.type === 'date'"
-              :label="item.label"
-              :prop="item.field"
-              :required="item.required"
-            >
-              <el-date-picker 
-                v-model="formData[item.field]"
-                type="date"
-                :placeholder="item.placeholder"
-                style="width: 100%"
-              />
-            </el-form-item>
-            
-            <!-- 文件上传 -->
-            <el-form-item 
-              v-else-if="item.type === 'upload'"
-              :label="item.label"
-              :prop="item.field"
-              :required="item.required"
-            >
-              <el-upload
-                v-model:file-list="formData[item.field]"
-                action="#"
-                :auto-upload="false"
-                :multiple="item.multiple"
-                :limit="item.limit"
-                :accept="item.accept"
-              >
-                <el-button>{{ item.buttonText || '选择文件' }}</el-button>
-                <template #tip>
-                  <div class="el-upload__tip text-gray-500 text-sm mt-1">
-                    {{ item.tip }}
-                  </div>
-                </template>
-              </el-upload>
-            </el-form-item>
-            
-            <!-- 开关 -->
-            <el-form-item 
-              v-else-if="item.type === 'switch'"
-              :label="item.label"
-              :prop="item.field"
-            >
-              <el-switch v-model="formData[item.field]" />
-            </el-form-item>
+            <BaseFormItem 
+              :item="item"
+              v-model="formData[item.field]"
+            />
           </div>
         </el-form>
       </div>
@@ -197,11 +48,11 @@
   </div>
 </template>
 
-<!-- 在 FormPreview 组件的 script 部分添加验证规则 -->
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Close } from '@element-plus/icons-vue'
+import BaseFormItem from './components/BaseFormItem/index.vue'
 
 interface Props {
   formConfig: any
@@ -535,10 +386,6 @@ const getDisplayData = () => {
   
   return displayData
 }
-// ... existing code ...
-
-// 在模板中使用验证规则
-// <el-form :rules="formRules" ...>
 </script>
 
 <style scoped>
