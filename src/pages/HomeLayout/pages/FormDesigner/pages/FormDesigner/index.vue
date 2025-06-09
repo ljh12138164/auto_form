@@ -6,6 +6,7 @@
       <TitleDialog
         v-model:visibleValue="showTitleDialog"
         v-model:formConfig="formConfig"
+        @update:formConfig="handleFormConfigChange"
       />
       <!-- 表单预览弹窗 -->
       <FormPreview
@@ -35,6 +36,22 @@
         <PropertyPanel :selected-item="selectedItem" @edit-title="editTitle" />
       </div>
     </div>
+    
+    <!-- 未保存提示对话框 -->
+    <el-dialog
+      v-model="showUnsavedDialog"
+      title="未保存的更改"
+      width="400px"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+    >
+      <p>您有未保存的更改，是否要保存？</p>
+      <template #footer>
+        <el-button @click="handleDiscardChanges">不保存</el-button>
+        <el-button @click="handleCancelLeave">取消</el-button>
+        <el-button type="primary" @click="handleSaveAndLeave">保存并离开</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -43,18 +60,22 @@ import { getFormAPI, postSaveFormAPI, TSaveForm } from "@/api";
 import { FormItem } from "@/types";
 import { notification } from "@/utils";
 import { ElMessage } from "element-plus";
-import { computed, ref,onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
 import ComponentPanel from "../../components/ComponentPanel/index.vue";
 import DesignCanvas from "../../components/DesignCanvas/index.vue";
 import FormPreview from "../../components/FormPreview/index.vue";
 import PropertyPanel from "../../components/PropertyPanel/index.vue";
 import TitleDialog from "../../components/TitleDialog/index.vue";
+
 const route = useRoute();
+const router = useRouter();
 const paramsId = route.params.id;
-// 弹窗控
+
+// 弹窗控制
 const showTitleDialog = ref(false);
 const showPreview = ref(false);
+const showUnsavedDialog = ref(false);
 
 // 表单配置
 const formConfig = ref({
@@ -63,6 +84,13 @@ const formConfig = ref({
 });
 
 const formItems = ref<FormItem[]>([]);
+
+// 数据变更跟踪
+const hasUnsavedChanges = ref(false);
+const originalFormConfig = ref<any>(null);
+const originalFormItems = ref<FormItem[]>([]);
+let pendingNavigation: any = null;
+
 // 选中的组件
 const selectedItemId = ref<string | null>(null);
 const selectedItem = computed(() => {
@@ -70,7 +98,32 @@ const selectedItem = computed(() => {
     formItems.value.find((item) => item.id === selectedItemId.value) || null
   );
 });
-// 表单项列表
+
+// 监听数据变更
+watch(
+  [formConfig, formItems],
+  () => {
+    if (originalFormConfig.value && originalFormItems.value) {
+      const configChanged = JSON.stringify(formConfig.value) !== JSON.stringify(originalFormConfig.value);
+      const itemsChanged = JSON.stringify(formItems.value) !== JSON.stringify(originalFormItems.value);
+      hasUnsavedChanges.value = configChanged || itemsChanged;
+    }
+  },
+  { deep: true }
+);
+
+// 保存原始数据
+const saveOriginalData = () => {
+  originalFormConfig.value = JSON.parse(JSON.stringify(formConfig.value));
+  originalFormItems.value = JSON.parse(JSON.stringify(formItems.value));
+  hasUnsavedChanges.value = false;
+};
+
+// 表单配置变更处理
+const handleFormConfigChange = () => {
+  // TitleDialog 更新时触发
+};
+
 // 保留原有的事件处理函数
 const editTitle = () => {
   showTitleDialog.value = true;
@@ -112,7 +165,8 @@ const handlePreview = () => {
   }
   showPreview.value = true;
 };
-const handleSave =async () => {
+
+const handleSave = async () => {
   const data: TSaveForm = {
     id: paramsId as string,
     description: formConfig.value.description,
@@ -121,26 +175,87 @@ const handleSave =async () => {
   };
   try {
     await postSaveFormAPI(data);
-    return notification("保存成功", "", "success")
+    saveOriginalData(); // 保存成功后更新原始数据
+    return notification("保存成功", "", "success");
   } catch (err) {
-    return notification("保存失败", "", "error")
+    return notification("保存失败", "", "error");
   }
 };
+
 const getFormData = async () => {
   try {
-    const res =await getFormAPI(paramsId as string);
+    const res = await getFormAPI(paramsId as string);
     // @ts-ignore
     const { title, description, form_config } = res?.data!;
     formConfig.value.title = title;
     formConfig.value.description = description;
     formItems.value = form_config;
-  }catch(err) {
-    console.log(err)
+    
+    // 保存初始数据
+    saveOriginalData();
+  } catch (err) {
+    console.log(err);
   }
-}
+};
+
+// 路由守卫 - 离开前检查
+onBeforeRouteLeave((to, from, next) => {
+  if (hasUnsavedChanges.value) {
+    pendingNavigation = { to, from, next };
+    showUnsavedDialog.value = true;
+  } else {
+    next();
+  }
+});
+
+// 浏览器刷新/关闭前提示
+const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+  if (hasUnsavedChanges.value) {
+    event.preventDefault();
+    event.returnValue = '您有未保存的更改，确定要离开吗？';
+    return '您有未保存的更改，确定要离开吗？';
+  }
+};
+
+// 未保存对话框处理函数
+const handleSaveAndLeave = async () => {
+  try {
+    await handleSave();
+    showUnsavedDialog.value = false;
+    if (pendingNavigation) {
+      pendingNavigation.next();
+      pendingNavigation = null;
+    }
+  } catch (err) {
+    ElMessage.error('保存失败，无法离开');
+  }
+};
+
+const handleDiscardChanges = () => {
+  hasUnsavedChanges.value = false;
+  showUnsavedDialog.value = false;
+  if (pendingNavigation) {
+    pendingNavigation.next();
+    pendingNavigation = null;
+  }
+};
+
+const handleCancelLeave = () => {
+  showUnsavedDialog.value = false;
+  if (pendingNavigation) {
+    pendingNavigation.next(false);
+    pendingNavigation = null;
+  }
+};
+
 onMounted(() => {
-  getFormData()
-})
+  getFormData();
+  window.addEventListener('beforeunload', handleBeforeUnload);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', handleBeforeUnload);
+});
 </script>
 
 <style lang="scss" scoped>
