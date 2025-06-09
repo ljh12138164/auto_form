@@ -111,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import { getTemplateFormAPI, TemplateForm } from "@/api";
+import { addTemplateCountAPI, getTemplateFormAPI, TemplateForm } from "@/api";
 import { WarningFilled, ZoomIn } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import { onMounted, ref } from "vue";
@@ -156,12 +156,15 @@ const showConfirmDialog = (template: TemplateForm) => {
 }
 
 // 确认使用模版
-const confirmUseTemplate = () => {
+const confirmUseTemplate = async () => {
   if (selectedTemplate.value) {
     emit("useTemplate", selectedTemplate.value);
     ElMessage.success(`已使用模版：${selectedTemplate.value.title}`)
     dialogVisible.value = false
-    selectedTemplate.value = null
+    await addTemplateCountAPI({
+      id: selectedTemplate.value.id
+    })
+    await getTemplateFormData()
   }
 }
 
@@ -173,7 +176,6 @@ const handleClose = () => {
 
 const getTemplateFormData = async () => {
   const res = await getTemplateFormAPI()
-  console.log(res.data);
   templateList.value = res.data
 }
 
