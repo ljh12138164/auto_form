@@ -477,14 +477,25 @@ const handleCancelLeave = () => {
     pendingNavigation = null;
   }
 };
-
+const handleKeydown = (e: KeyboardEvent) => {
+    if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+      e.preventDefault()
+      undo()
+    } else if ((e.ctrlKey && e.key === 'y') || (e.ctrlKey && e.shiftKey && e.key === 'Z')) {
+      e.preventDefault()
+      redo()
+    }
+  }
 onMounted(() => {
   getFormData();
   window.addEventListener("beforeunload", handleBeforeUnload);
+  // 添加键盘事件监听
+  document.addEventListener("keydown", handleKeydown);
 });
 
 onBeforeUnmount(() => {
   window.removeEventListener("beforeunload", handleBeforeUnload);
+  document.removeEventListener("keydown", handleKeydown);
 });
 </script>
 
