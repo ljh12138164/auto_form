@@ -66,7 +66,7 @@ import {
   Grid,
   Odometer,
   Select,
-  Select as SelectIcon,
+  SemiSelect,
   Switch,
   Upload
 } from "@element-plus/icons-vue";
@@ -125,7 +125,7 @@ const basicComponents = [
   {
     type: "checkbox",
     label: "多选框",
-    icon: SelectIcon,
+    icon: SemiSelect,
     defaultProps: { placeholder: "请选择" },
     options: [
       { label: "选项1", value: "1" },

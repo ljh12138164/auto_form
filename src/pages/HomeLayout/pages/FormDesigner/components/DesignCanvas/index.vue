@@ -14,6 +14,11 @@
         
         <!-- 右侧：操作按钮组 -->
         <div class="flex items-center gap-3">
+          <!-- 清空 -->
+          <el-button size="danger" @click="$emit('clearAll')">
+            <el-icon><Delete /></el-icon>
+            清空
+          </el-button>
           <!-- 预览按钮，点击时触发 preview 事件 -->
           <el-button size="primary" @click="$emit('preview')">
             <el-icon><View /></el-icon>
@@ -67,7 +72,7 @@
 // 导入 Vue 的响应式 API
 import { ref } from 'vue'
 // 导入 Element Plus 图标组件
-import { Document, Edit, Plus, View } from '@element-plus/icons-vue'
+import { Document, Edit, Plus, View,Delete } from '@element-plus/icons-vue'
 // 导入 Element Plus 消息提示组件
 import { ElMessage } from 'element-plus'
 // 导入表单项列表子组件
@@ -96,6 +101,7 @@ const emits = defineEmits([
   'copyItem',         // 复制表单项事件
   'deleteItem',       // 删除表单项事件
   'formItemsChange',  // 表单项变化事件
+  'clearAll'           // 清空表单事件
 ])
 // 保存
 const save = ()=>{

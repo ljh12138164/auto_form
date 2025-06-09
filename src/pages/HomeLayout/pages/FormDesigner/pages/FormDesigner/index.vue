@@ -21,6 +21,7 @@
         <ComponentPanel @useTemplate="setTemplate" />
         <!-- 中间设计画布 -->
         <DesignCanvas
+          @clearAll="clearAll"
           :form-config="formConfig"
           v-model:form-items="formItems"
           :selected-item-id="selectedItemId"
@@ -36,7 +37,7 @@
         <PropertyPanel :selected-item="selectedItem" @edit-title="editTitle" />
       </div>
     </div>
-    
+
     <!-- 未保存提示对话框 -->
     <el-dialog
       v-model="showUnsavedDialog"
@@ -49,7 +50,9 @@
       <template #footer>
         <el-button @click="handleDiscardChanges">不保存</el-button>
         <el-button @click="handleCancelLeave">取消</el-button>
-        <el-button type="primary" @click="handleSaveAndLeave">保存并离开</el-button>
+        <el-button type="primary" @click="handleSaveAndLeave"
+          >保存并离开</el-button
+        >
       </template>
     </el-dialog>
   </div>
@@ -59,7 +62,7 @@
 import { getFormAPI, postSaveFormAPI, TSaveForm } from "@/api";
 import { FormItem } from "@/types";
 import { notification } from "@/utils";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
 import ComponentPanel from "../../components/ComponentPanel/index.vue";
@@ -70,7 +73,6 @@ import TitleDialog from "../../components/TitleDialog/index.vue";
 import { TemplateForm } from "@/api";
 
 const route = useRoute();
-const router = useRouter();
 const paramsId = route.params.id;
 
 // 弹窗控制
@@ -105,14 +107,28 @@ watch(
   [formConfig, formItems],
   () => {
     if (originalFormConfig.value && originalFormItems.value) {
-      const configChanged = JSON.stringify(formConfig.value) !== JSON.stringify(originalFormConfig.value);
-      const itemsChanged = JSON.stringify(formItems.value) !== JSON.stringify(originalFormItems.value);
+      const configChanged =
+        JSON.stringify(formConfig.value) !==
+        JSON.stringify(originalFormConfig.value);
+      const itemsChanged =
+        JSON.stringify(formItems.value) !==
+        JSON.stringify(originalFormItems.value);
       hasUnsavedChanges.value = configChanged || itemsChanged;
     }
   },
   { deep: true }
 );
-
+// 清空表单数据
+const clearAll = async () => {
+  await ElMessageBox.confirm(`确定要清空表单吗?`, "确认删除", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(() => {
+    formItems.value = [];
+    return ElMessage.success("清空成功");
+  });
+};
 // 保存原始数据
 const saveOriginalData = () => {
   originalFormConfig.value = JSON.parse(JSON.stringify(formConfig.value));
@@ -129,7 +145,7 @@ const setTemplate = (template: TemplateForm) => {
   formConfig.value.title = template.title;
   formConfig.value.description = template.description;
   saveOriginalData(); // 保存成功后更新原始数据
-}
+};
 // 保留原有的事件处理函数
 const editTitle = () => {
   showTitleDialog.value = true;
@@ -196,7 +212,7 @@ const getFormData = async () => {
     formConfig.value.title = title;
     formConfig.value.description = description;
     formItems.value = form_config;
-    
+
     // 保存初始数据
     saveOriginalData();
   } catch (err) {
@@ -218,8 +234,8 @@ onBeforeRouteLeave((to, from, next) => {
 const handleBeforeUnload = (event: BeforeUnloadEvent) => {
   if (hasUnsavedChanges.value) {
     event.preventDefault();
-    event.returnValue = '您有未保存的更改，确定要离开吗？';
-    return '您有未保存的更改，确定要离开吗？';
+    event.returnValue = "您有未保存的更改，确定要离开吗？";
+    return "您有未保存的更改，确定要离开吗？";
   }
 };
 
@@ -233,7 +249,7 @@ const handleSaveAndLeave = async () => {
       pendingNavigation = null;
     }
   } catch (err) {
-    ElMessage.error('保存失败，无法离开');
+    ElMessage.error("保存失败，无法离开");
   }
 };
 
@@ -256,11 +272,11 @@ const handleCancelLeave = () => {
 
 onMounted(() => {
   getFormData();
-  window.addEventListener('beforeunload', handleBeforeUnload);
+  window.addEventListener("beforeunload", handleBeforeUnload);
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('beforeunload', handleBeforeUnload);
+  window.removeEventListener("beforeunload", handleBeforeUnload);
 });
 </script>
 
