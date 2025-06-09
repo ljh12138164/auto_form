@@ -21,6 +21,7 @@
         <ComponentPanel @useTemplate="setTemplate" />
         <!-- 中间设计画布 -->
         <DesignCanvas
+          @export="exportForm"
           @clearAll="clearAll"
           :form-config="formConfig"
           v-model:form-items="formItems"
@@ -59,18 +60,17 @@
 </template>
 
 <script setup lang="ts">
-import { getFormAPI, postSaveFormAPI, TSaveForm } from "@/api";
+import { getFormAPI, postSaveFormAPI, TemplateForm, TSaveForm } from "@/api";
 import { FormItem } from "@/types";
 import { notification } from "@/utils";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
+import { onBeforeRouteLeave, useRoute } from "vue-router";
 import ComponentPanel from "../../components/ComponentPanel/index.vue";
 import DesignCanvas from "../../components/DesignCanvas/index.vue";
 import FormPreview from "../../components/FormPreview/index.vue";
 import PropertyPanel from "../../components/PropertyPanel/index.vue";
 import TitleDialog from "../../components/TitleDialog/index.vue";
-import { TemplateForm } from "@/api";
 
 const route = useRoute();
 const paramsId = route.params.id;
@@ -126,6 +126,7 @@ const clearAll = async () => {
     type: "warning",
   }).then(() => {
     formItems.value = [];
+    saveOriginalData();
     return ElMessage.success("清空成功");
   });
 };
@@ -139,6 +140,18 @@ const saveOriginalData = () => {
 // 表单配置变更处理
 const handleFormConfigChange = () => {
   // TitleDialog 更新时触发
+};
+// 导出JSON
+const exportForm = () => {
+  const dataStr = JSON.stringify(formItems.value, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${formConfig.value.title}_${new Date().getTime()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  notification("导出成功", `${formConfig.value.title} 数据导出成功`, "success");
 };
 const setTemplate = (template: TemplateForm) => {
   formItems.value = template.templateConfig;

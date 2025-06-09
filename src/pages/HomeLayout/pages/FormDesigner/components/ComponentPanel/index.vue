@@ -27,7 +27,7 @@
       </el-tabs>
     </div>
     
-    <div class="panel-body flex-1 overflow-y-auto p-3">
+    <div class="panel-body flex-1 overflow-y-auto p-4">
       <!-- 组件库内容 -->
       <div v-if="activeTab === 'components'" class="components-content">
         <div class="component-group mb-6">
@@ -66,7 +66,7 @@ import {
   Grid,
   Odometer,
   Select,
-  SemiSelect,
+  Select as SelectIcon,
   Switch,
   Upload
 } from "@element-plus/icons-vue";
@@ -125,7 +125,7 @@ const basicComponents = [
   {
     type: "checkbox",
     label: "多选框",
-    icon: SemiSelect,
+    icon: SelectIcon,
     defaultProps: { placeholder: "请选择" },
     options: [
       { label: "选项1", value: "1" },

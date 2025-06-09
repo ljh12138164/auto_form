@@ -14,20 +14,30 @@
         
         <!-- 右侧：操作按钮组 -->
         <div class="flex items-center gap-3">
-          <!-- 清空 -->
-          <el-button size="danger" @click="$emit('clearAll')">
-            <el-icon><Delete /></el-icon>
-            清空
+          <!-- 保存按钮 - 最重要的操作，放在最前面 -->
+          <el-button type="primary" @click="save">
+            <el-icon><DocumentAdd /></el-icon>
+            保存
           </el-button>
-          <!-- 预览按钮，点击时触发 preview 事件 -->
-          <el-button size="primary" @click="$emit('preview')">
+          <!-- 预览按钮 - 常用功能 -->
+          <el-button type="success" @click="$emit('preview')">
             <el-icon><View /></el-icon>
             预览
           </el-button>
-          <!-- 保存按钮，点击时触发 save 事件 -->
-          <el-button size="default" @click="save">
-            <el-icon><Document /></el-icon>
-            保存
+          <!-- 导出JSON - 数据操作 -->
+          <el-button type="info" @click="$emit('export')">
+            <el-icon><Download /></el-icon>
+            导出JSON
+          </el-button>
+          <!-- 导入JSON - 数据操作 -->
+          <el-button type="warning" @click="$emit('import')">
+            <el-icon><Upload /></el-icon>
+            导入JSON
+          </el-button>
+          <!-- 清空 - 危险操作，放在最后 -->
+          <el-button type="danger" @click="$emit('clearAll')">
+            <el-icon><Delete /></el-icon>
+            清空
           </el-button>
         </div>
       </div>
@@ -72,12 +82,12 @@
 // 导入 Vue 的响应式 API
 import { ref } from 'vue'
 // 导入 Element Plus 图标组件
-import { Document, Edit, Plus, View,Delete } from '@element-plus/icons-vue'
+import { Delete, Edit, Plus, View } from '@element-plus/icons-vue'
 // 导入 Element Plus 消息提示组件
 import { ElMessage } from 'element-plus'
 // 导入表单项列表子组件
-import FormItemList from '../FormItemList/index.vue'
 import { FormItem } from '@/types'
+import FormItemList from '../FormItemList/index.vue'
 // 定义组件的 Props 类型接口
 interface Props {
   formConfig: any      // 表单配置对象
@@ -101,7 +111,9 @@ const emits = defineEmits([
   'copyItem',         // 复制表单项事件
   'deleteItem',       // 删除表单项事件
   'formItemsChange',  // 表单项变化事件
-  'clearAll'           // 清空表单事件
+  'clearAll',           // 清空表单事件
+  "export",           // 导出表单事件
+  "import"
 ])
 // 保存
 const save = ()=>{

@@ -324,7 +324,6 @@ const handleView = (row: TsubmittedItem) => {
 };
 
 const handleExportSingle = (row: any) => {
-  // 模拟单条数据导出
   const dataStr = JSON.stringify(row.data, null, 2);
   const blob = new Blob([dataStr], { type: "application/json" });
   const url = URL.createObjectURL(blob);
