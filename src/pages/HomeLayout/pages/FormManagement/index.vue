@@ -81,7 +81,7 @@
           align="center"
           label="表单描述"
           prop="description"
-          width="300"
+          width="230"
         >
           <template #default="{ row }">
             <div class="text-ellipsis-2 text-gray-600">
@@ -146,7 +146,7 @@
                 <el-icon><Edit /></el-icon>
                 编辑
               </el-button>
-              <el-button
+              <!-- <el-button
                 link
                 type="success"
                 size="small"
@@ -154,7 +154,7 @@
               >
                 <el-icon><View /></el-icon>
                 预览
-              </el-button>
+              </el-button> -->
               <el-button
                 link
                 type="warning"
