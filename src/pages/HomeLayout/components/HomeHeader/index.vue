@@ -7,6 +7,8 @@
         class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 rounded-lg px-3 py-2 transition-colors"
       >
         <el-avatar
+          alt="用户头像"
+          aria-label="用户头像"
           :size="32"
           src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"
         />

@@ -3,50 +3,19 @@ import * as echarts from 'echarts/core';
 
 // 引入图表类型
 import {
-  LineChart,
-  BarChart,
-  PieChart,
-  ScatterChart,
-  RadarChart,
-  MapChart,
-  TreeChart,
-  TreemapChart,
-  GraphChart,
-  GaugeChart,
-  FunnelChart,
-  ParallelChart,
-  SankeyChart,
-  BoxplotChart,
-  CandlestickChart,
-  EffectScatterChart,
-  LinesChart,
-  HeatmapChart,
-  PictorialBarChart,
-  ThemeRiverChart,
-  SunburstChart,
-  CustomChart,
+    BarChart,
+    LineChart,
+    PieChart
 } from 'echarts/charts';
 
 // 引入组件
 import {
-  TitleComponent,
-  TooltipComponent,
-  GridComponent,
-  PolarComponent,
-  AriaComponent,
-  ParallelComponent,
-  LegendComponent,
-  RadarComponent,
-  ToolboxComponent,
-  DataZoomComponent,
-  VisualMapComponent,
-  TimelineComponent,
-  CalendarComponent,
-  GraphicComponent,
-  MarkPointComponent,
-  MarkLineComponent,
-  MarkAreaComponent,
-  TransformComponent,
+    DataZoomComponent,
+    GridComponent,
+    LegendComponent,
+    TitleComponent,
+    ToolboxComponent,
+    TooltipComponent
 } from 'echarts/components';
 
 // 引入渲染器
@@ -75,4 +44,4 @@ echarts.use([
   UniversalTransition,
 ]);
 
-export {echarts};
+export { echarts };
