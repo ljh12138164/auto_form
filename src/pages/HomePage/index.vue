@@ -6,53 +6,88 @@
                 <!-- Logo区域 -->
                 <div class="flex items-center">
                     <img width="28" src="@/assets/img/jianada.png" alt="">
-                    <span>yiqiu-form</span>
+                    <span class="ml-2 text-xl font-semibold text-gray-800">AUTO FORM</span>
                 </div>
-
             </div>
         </div>
 
-        <!-- 其他内容区域 -->
+        <!-- 主要内容区域 -->
         <div class="container mx-auto px-4 py-16">
             <!-- 标题区域 -->
             <div class="text-center max-w-3xl mx-auto">
-                <h2 class="text-3xl sm:text-4xl font-bold text-center mb-6">快速构建专业的表单</h2>
+                <h2 class="text-3xl sm:text-4xl font-bold text-center mb-6">智能表单设计平台</h2>
 
                 <p class="text-lg sm:text-xl text-gray-600 mb-8">
-                    拖拽式表单设计，让表单制作更简单。无需编码，即可创建完美的表单。
+                    基于 Vue3 + TypeScript 的可视化表单构建工具，拖拽设计，一键生成代码
                 </p>
-                <el-button @click="goLoginPage" type="primary" class="!bg-black !rounded-md !h-10 !px-6 hover:!bg-gray-800">
-                    免费使用
+                <el-button @click="goLoginPage" type="primary" class="!bg-blue-600 !rounded-md !h-10 !px-6 hover:!bg-blue-700">
+                    开始使用
                 </el-button>
             </div>
 
             <!-- 功能特性区域 -->
             <div class="mt-24 max-w-6xl mx-auto">
-                <h2 class="text-3xl sm:text-4xl font-bold text-center mb-6">强大的特性</h2>
-                <p class="text-lg sm:text-xl text-center text-gray-600 mb-16">一切你需要的特性功能，都在这里</p>
+                <h2 class="text-3xl sm:text-4xl font-bold text-center mb-6">核心功能</h2>
+                <p class="text-lg sm:text-xl text-center text-gray-600 mb-16">完整的表单解决方案</p>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
-                    <!-- 拖拽设计卡片 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
+                    <!-- 可视化设计 -->
                     <el-card shadow="hover" class="!border-0 transform hover:-translate-y-1 transition-all duration-300">
                         <div class="text-2xl font-semibold mb-6 flex items-center">
-                            <el-icon class="text-3xl mr-3"><Pointer /></el-icon>
-                            拖拽设计
+                            <el-icon class="text-3xl mr-3 text-blue-500"><Pointer /></el-icon>
+                            可视化设计
                         </div>
                         <p class="text-lg text-gray-600 leading-relaxed">
-                            简单拖拽即可完成表单设计，所见即所得的编辑体验
+                            拖拽式表单设计，丰富的组件库，所见即所得的编辑体验
                         </p>
                     </el-card>
 
-                    <!-- 数据管理卡片 -->
+                    <!-- 代码生成 -->
                     <el-card shadow="hover" class="!border-0 transform hover:-translate-y-1 transition-all duration-300">
                         <div class="text-2xl font-semibold mb-6 flex items-center">
-                            <el-icon class="text-3xl mr-3"><DataLine /></el-icon>
+                            <el-icon class="text-3xl mr-3 text-green-500"><Document /></el-icon>
+                            代码生成
+                        </div>
+                        <p class="text-lg text-gray-600 leading-relaxed">
+                            自动生成高质量的 Vue3 组件代码，支持 TypeScript 和最佳实践
+                        </p>
+                    </el-card>
+
+                    <!-- 数据管理 -->
+                    <el-card shadow="hover" class="!border-0 transform hover:-translate-y-1 transition-all duration-300">
+                        <div class="text-2xl font-semibold mb-6 flex items-center">
+                            <el-icon class="text-3xl mr-3 text-purple-500"><DataLine /></el-icon>
                             数据管理
                         </div>
                         <p class="text-lg text-gray-600 leading-relaxed">
-                            实时的数据收集和管理功能，支持多种数据导出
+                            实时数据收集和管理功能，支持多种数据导出和可视化
                         </p>
                     </el-card>
+                </div>
+
+                <!-- 技术栈展示 -->
+                <div class="mt-20">
+                    <h3 class="text-2xl font-bold text-center mb-12">技术栈</h3>
+                    <div class="flex flex-wrap justify-center items-center gap-8">
+                        <div class="bg-white rounded-lg p-4 shadow-sm border">
+                            <span class="text-lg font-medium text-gray-700">Vue 3</span>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-sm border">
+                            <span class="text-lg font-medium text-gray-700">TypeScript</span>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-sm border">
+                            <span class="text-lg font-medium text-gray-700">Tailwind CSS</span>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-sm border">
+                            <span class="text-lg font-medium text-gray-700">Element Plus</span>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-sm border">
+                            <span class="text-lg font-medium text-gray-700">Vite</span>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-sm border">
+                            <span class="text-lg font-medium text-gray-700">Express.js</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -158,7 +158,7 @@
       <div class="p-6 border-b border-gray-200">
         <div class="flex justify-between items-center">
           <h3 class="text-lg font-semibold text-gray-900">最近提交记录</h3>
-          <el-button type="primary" link @click="lookAll">{{isAll?'收起':'查看全部'}}</el-button>
+          <el-button type="primary" link @click="lookAll">{{isAll?'收起':'查看更多'}}</el-button>
         </div>
       </div>
       <div class="p-6">
@@ -212,6 +212,7 @@ import { useRouter } from "vue-router";
 import ChartContent from "./components/ChartContent/index.vue";
 const router = useRouter();
 import { useUserStore } from "@/stores/modules/user";
+import { ElMessage } from "element-plus";
 const userStore = useUserStore();
 // 个人统计数据
 const myForms = ref(0); // 我的表单总数
@@ -227,14 +228,17 @@ const getRecentActivitiesData =async () => {
     const res = await getRecentActivitiesAPI(limit.value)
     submitRecords.value = res.data    
 };
-const lookAll = ()=>{
+const lookAll =async ()=>{
+  if(submitRecords.value.length<10) {
+    return ElMessage.warning('没有更多了')
+  }
     isAll.value = !isAll.value
     if(isAll.value){
         limit.value = 1000000
     }else{
         limit.value = 10
     }
-    getRecentActivitiesData()
+    await getRecentActivitiesData()
 }
 // 快捷操作方法
 
