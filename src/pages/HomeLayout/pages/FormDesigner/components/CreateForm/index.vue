@@ -1,11 +1,11 @@
 <template>
   <div class="form-management">
     <!-- 表单列表区域 -->
-    <div class="forms-section">
+        
+        <div class="forms-section h-100" style="overflow-y: auto">
       <h2 class="section-title">我的表单</h2>
       <div
-        style="overflow-y: auto"
-        class="forms-grid h-100"
+        class="forms-grid"
         v-if="createStore.createFormInfo.length > 0"
       >
         <div

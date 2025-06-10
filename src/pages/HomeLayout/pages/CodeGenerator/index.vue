@@ -101,7 +101,7 @@
 
     <!-- 代码生成区域 -->
     <div class="code-output" v-if="selectedForm">
-      <el-card>
+      <el-card class="h-full">
         <template #header>
           <div class="code-header">
             <span>生成的 Vue3 + Element Plus 代码</span>
