@@ -102,11 +102,11 @@ export const VueTemplates = {
   
     // 字段模板
     fieldTemplates: {
-      input: (field: any, required: string, fieldName: string) => `      <el-form-item label="${field.label}"${required}>
+      input: (field: any, required: string, fieldName: string) => `      <el-form-item label="${field.label}" prop="${fieldName}"${required}>
           <el-input v-model="form.${fieldName}" placeholder="${field.props?.placeholder || field.placeholder || ''}" />
         </el-form-item>`,
       
-      textarea: (field: any, required: string, fieldName: string) => `      <el-form-item label="${field.label}"${required}>
+      textarea: (field: any, required: string, fieldName: string) => `      <el-form-item label="${field.label}" prop="${fieldName}"${required}>
           <el-input 
             v-model="form.${fieldName}" 
             type="textarea" 
@@ -115,7 +115,7 @@ export const VueTemplates = {
           />
         </el-form-item>`,
       
-      date: (field: any, required: string, fieldName: string) => `      <el-form-item label="${field.label}"${required}>
+      date: (field: any, required: string, fieldName: string) => `      <el-form-item label="${field.label}" prop="${fieldName}"${required}>
           <el-date-picker 
             v-model="form.${fieldName}" 
             type="date" 
@@ -124,19 +124,19 @@ export const VueTemplates = {
           />
         </el-form-item>`,
       
-      radio: (field: any, required: string, options: string, fieldName: string) => `      <el-form-item label="${field.label}"${required}>
+      radio: (field: any, required: string, options: string, fieldName: string) => `      <el-form-item label="${field.label}" prop="${fieldName}"${required}>
           <el-radio-group v-model="form.${fieldName}">
   ${options}
           </el-radio-group>
         </el-form-item>`,
       
-      checkbox: (field: any, options: string, fieldName: string) => `      <el-form-item label="${field.label}">
+      checkbox: (field: any, options: string, fieldName: string) => `      <el-form-item label="${field.label}" prop="${fieldName}">
           <el-checkbox-group v-model="form.${fieldName}">
   ${options}
           </el-checkbox-group>
         </el-form-item>`,
       
-      default: (field: any, required: string, fieldName: string) => `      <el-form-item label="${field.label}"${required}>
+      default: (field: any, required: string, fieldName: string) => `      <el-form-item label="${field.label}" prop="${fieldName}"${required}>
           <el-input v-model="form.${fieldName}" placeholder="${field.props?.placeholder || field.placeholder || ''}" />
         </el-form-item>`
     },
