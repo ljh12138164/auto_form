@@ -10,7 +10,7 @@
           >
           <el-input
             @keydown.enter="handleSearch"
-            v-model="searchForm.name"
+            v-model="searchForm.title"
             placeholder="请输入表单名称"
             clearable
             style="width: 200px"
@@ -20,17 +20,14 @@
         <!-- 创建时间范围 -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2"
-            >创建时间</label
+            >表单描述</label
           >
-          <el-date-picker
+          <el-input
             @keydown.enter="handleSearch"
-            v-model="searchForm.dateRange"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            style="width: 240px"
-            class="w-full"
+            v-model="searchForm.description"
+            placeholder="请输入表单描述"
+            clearable
+            style="width: 200px"
           />
         </div>
       </div>
@@ -67,11 +64,7 @@
 
       <el-table v-loading="loading" :data="tableData" stripe class="w-full">
         <el-table-column align="center" type="index" label="序号" :width="80" />
-        <el-table-column
-          align="center"
-          prop="name"
-          label="表单名称"
-        >
+        <el-table-column align="center" prop="title" label="表单名称" width="200">
           <template #default="{ row }">
             <div class="flex items-center justify-center">
               <el-icon class="mr-2 text-blue-500"><Document /></el-icon>
@@ -79,8 +72,19 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="表单描述" prop="description" />
-        <el-table-column align="center" label="表单提交次数" width="120" prop="submitCount" />
+        <el-table-column align="center" label="表单描述" prop="description" width="300">
+          <template #default="{ row }">
+            <div class="text-ellipsis-2 text-gray-600">
+              {{ row.description || '暂无描述' }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="表单提交次数"
+          width="120"
+          prop="submitCount"
+        />
         <el-table-column
           align="center"
           prop="createTime"
@@ -111,9 +115,13 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="操作" fixed="right" width="250">
+        <el-table-column align="center" label="操作" fixed="right">
           <template #default="{ row }">
             <div class="flex gap-2 justify-center">
+              <el-button type="info" size="small" @click="handleDetails(row)">
+                <el-icon><InfoFilled /></el-icon>
+                详情
+              </el-button>
               <el-button type="primary" size="small" @click="handleEdit(row)">
                 <el-icon><Edit /></el-icon>
                 编辑
@@ -149,6 +157,64 @@
         />
       </div>
     </div>
+
+    <!-- 表单详情对话框 -->
+    <el-dialog
+      v-model="detailsDialogVisible"
+      title="表单详情"
+      width="1000px"
+      :before-close="handleCloseDetails"
+      style="
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        top: -100px;
+      "
+    >
+      <div v-if="currentForm" class="space-y-6">
+        <!-- 基本信息 -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h4 class="text-lg font-medium mb-4 text-gray-800">基本信息</h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <span class="text-gray-600">表单名称：</span>
+              <span class="font-medium">{{ currentForm.title }}</span>
+            </div>
+            <div>
+              <span class="text-gray-600">表单ID：</span>
+              <span class="font-medium">{{ currentForm.id }}</span>
+            </div>
+            <div>
+              <span class="text-gray-600">创建时间：</span>
+              <span>{{ currentForm.createTime }}</span>
+            </div>
+            <div>
+              <span class="text-gray-600">更新时间：</span>
+              <span>{{ currentForm.updateTime }}</span>
+            </div>
+            <div class="col-span-2">
+              <span class="text-gray-600">表单描述：</span>
+              <span>{{ currentForm.description || "暂无描述" }}</span>
+            </div>
+            <div>
+              <span class="text-gray-600">提交次数：</span>
+              <span class="font-medium text-blue-600">{{
+                currentForm.submitCount
+              }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 表单配置 -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h4 class="text-lg font-medium mb-4 text-gray-800">表单配置</h4>
+          <pre
+            class="bg-white p-4 rounded border text-sm overflow-auto max-h-96 text-gray-800"
+            >{{ JSON.stringify(currentForm.formConfig, null, 2) }}</pre
+          >
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -156,7 +222,7 @@
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
-import {getCreateFormAPI,FormItem } from "@/api";
+import { getCreateFormAPI, FormItem } from "@/api";
 import {
   Search,
   Refresh,
@@ -165,6 +231,7 @@ import {
   Edit,
   View,
   Delete,
+  InfoFilled,
 } from "@element-plus/icons-vue";
 
 const router = useRouter();
@@ -173,9 +240,9 @@ const router = useRouter();
 const loading = ref(false);
 
 // 查询表单
-const searchForm = reactive({
-  name: "",
-  dateRange: [],
+const searchForm = ref({
+  title: null,
+  description: null,
 });
 
 // 表格数据
@@ -187,6 +254,10 @@ const pagination = ref({
   pageSize: 10,
   total: 0,
 });
+
+// 详情对话框
+const detailsDialogVisible = ref(false);
+const currentForm = ref<FormItem | null>(null);
 
 // 工具函数
 const formatDate = (dateTime: string) => {
@@ -210,17 +281,16 @@ const handleSearch = () => {
 
 // 重置
 const handleReset = () => {
-  Object.assign(searchForm, {
-    name: "",
-    dateRange: [],
-    status: "",
-  });
+  searchForm.value.title = null;
+  searchForm.value.description = null;
+  pagination.value.currentPage = 1;
+  pagination.value.pageSize = 10;
   handleSearch();
 };
 
 // 编辑
 const handleEdit = (row: FormItem) => {
-  router.push(`/form-designer?id=${row.id}`);
+  router.push(`/home/form-designer/designer/${row.id}`);
 };
 
 // 预览
@@ -267,7 +337,7 @@ const handleCurrentChange = (val: number) => {
 const loadTableData = async () => {
   loading.value = true;
   try {
-    const res = await getCreateFormAPI();
+    const res = await getCreateFormAPI({ ...searchForm.value, ...pagination.value });
     tableData.value = res.data.createData;
     pagination.value.total = res.data.total as number;
   } catch (error) {
@@ -281,6 +351,18 @@ const loadTableData = async () => {
 onMounted(() => {
   loadTableData();
 });
+
+// 查看详情
+const handleDetails = (row: FormItem) => {
+  currentForm.value = row;
+  detailsDialogVisible.value = true;
+};
+
+// 关闭详情对话框
+const handleCloseDetails = () => {
+  detailsDialogVisible.value = false;
+  currentForm.value = null;
+};
 </script>
 
 <style lang="scss" scoped>
@@ -294,5 +376,20 @@ onMounted(() => {
 
 .el-pagination {
   --el-pagination-bg-color: transparent;
+}
+
+pre {
+  font-family: 'Courier New', Courier, monospace;
+  line-height: 1.4;
+}
+
+// 文本溢出隐藏样式
+.text-ellipsis-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
 }
 </style>
