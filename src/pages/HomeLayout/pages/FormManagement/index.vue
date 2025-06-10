@@ -157,9 +157,9 @@
               </el-button>
               <el-button
                 link
-                type="waring"
+                type="warning"
                 size="small"
-                @click="handlePreview(row)"
+                @click="handleExport(row)"
               >
                 <el-icon><Download /></el-icon>
                 导出
@@ -303,7 +303,19 @@ const formatDate = (dateTime: string) => {
 const formatTime = (dateTime: string) => {
   return dateTime.split(" ")[1];
 };
-
+// 导出JSON
+const handleExport = (row: FormItem) => {
+  const blob = new Blob([JSON.stringify(row.formConfig, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${row.title}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+  ElMessage.success("导出成功");
+}
 // 新增表单
 const handleCreateForm = () => {
   router.push("/home/form-designer");
