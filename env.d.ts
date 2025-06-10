@@ -9,6 +9,8 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+declare module 'vite-plugin-terser';
+
 
 // Web API 类型补充（如果需要使用蓝牙等API）
 declare global {
