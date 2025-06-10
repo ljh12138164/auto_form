@@ -29,7 +29,6 @@ import {
   House,
   Edit,
   Document,
-  Star,
   DataAnalysis,
   Download,
 } from "@element-plus/icons-vue";

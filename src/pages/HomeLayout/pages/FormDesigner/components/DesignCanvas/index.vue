@@ -122,7 +122,7 @@ import { ref } from "vue";
 import { Delete, Edit, Plus, View, RefreshLeft, RefreshRight } from "@element-plus/icons-vue";// 导入 Element Plus 消息提示组件
 import { ElMessage } from "element-plus";
 // 导入表单项列表子组件
-import { FormItem } from "@/types";
+import {type FormItem } from "@/types";
 import FormItemList from "../FormItemList/index.vue";
 // 定义组件的 Props 类型接口
 interface Props {

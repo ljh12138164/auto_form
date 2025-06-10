@@ -1,4 +1,4 @@
-import { Login, postLogoutAPI, TLoginForm } from "@/api";
+import { Login, postLogoutAPI,type TLoginForm } from "@/api";
 import { notification } from "@/utils";
 import { clearTokens, getAccessToken, setAccessToken } from "@/utils/token";
 import { defineStore } from "pinia";

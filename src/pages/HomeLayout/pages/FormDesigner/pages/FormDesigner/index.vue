@@ -121,8 +121,8 @@
 </template>
 
 <script setup lang="ts">
-import { getFormAPI, postSaveFormAPI, TemplateForm, TSaveForm } from "@/api";
-import { FormItem } from "@/types";
+import { getFormAPI, postSaveFormAPI,type TemplateForm,type TSaveForm } from "@/api";
+import {type FormItem } from "@/types";
 import { notification } from "@/utils";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";

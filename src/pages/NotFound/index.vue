@@ -23,6 +23,7 @@
   
   const router = useRouter()
   const countdown = ref(3)
+  // @ts-ignore
   let timer: NodeJS.Timeout | null = null
   
   const goBack = () => {

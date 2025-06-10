@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed, watch } from "vue";
 import * as echarts from "echarts";
-import { getDashboardtrendsAPI, Tchart } from "@/api";
+import { getDashboardtrendsAPI,type Tchart } from "@/api";
 
 const chartRef = ref();
 let chartInstance: echarts.ECharts | null = null;

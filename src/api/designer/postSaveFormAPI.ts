@@ -1,4 +1,4 @@
-import { FormItem } from "@/types";
+import {type FormItem } from "@/types";
 import { post } from "@/utils";
 export type TSaveForm = {
   id: string;

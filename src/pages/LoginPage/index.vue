@@ -119,7 +119,7 @@ const formRules = reactive<FormRules>({
   username: [
     { required: true, message: isLogin.value ? "请输入用户名或邮箱" : "请输入用户名", trigger: "blur" },
     {
-      validator: (rule, value, callback) => {
+      validator: (_, value, callback) => {
         if (isLogin.value) {
           // 登录模式：允许用户名或邮箱
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -150,7 +150,7 @@ const formRules = reactive<FormRules>({
   confirmPassword: [
     { required: true, message: "请确认密码", trigger: "blur" },
     {
-      validator: (rule, value, callback) => {
+      validator: (_, value, callback) => {
         if (value !== formData.password) {
           callback(new Error("两次输入的密码不一致"));
         } else {

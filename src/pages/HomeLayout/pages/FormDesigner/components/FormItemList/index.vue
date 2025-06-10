@@ -108,7 +108,7 @@ import ElUpload from './components/ElUpload/index.vue'
 import ElInputNumber from './components/ElInputNumber/index.vue'
 import ElRadio from './components/ElRadio/index.vue'
 import ElCheckbox from './components/ElCheckbox/index.vue'
-import { FormItem } from "@/types";
+import {type FormItem } from "@/types";
 interface Props {
   selectedItemId: string | null;
 }
@@ -182,7 +182,7 @@ const handleItemDragOver = (event: DragEvent, index: number) => {
   dragOverIndex.value = index;
 };
 
-const handleItemDragEnter = (event: DragEvent, index: number) => {
+const handleItemDragEnter = (event: DragEvent, _: number) => {
   // 检查是否是内部排序
   const isInternalSort = event.dataTransfer?.types.includes(
     "application/x-form-item-sort"
@@ -193,7 +193,7 @@ const handleItemDragEnter = (event: DragEvent, index: number) => {
   event.stopPropagation();
 };
 
-const handleItemDragEnd = (event: DragEvent) => {
+const handleItemDragEnd = (_: DragEvent) => {
   // 恢复所有样式
   const draggedElements = document.querySelectorAll(
     '.form-item-wrapper[style*="opacity"]'

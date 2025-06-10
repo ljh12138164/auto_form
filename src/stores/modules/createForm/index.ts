@@ -1,4 +1,4 @@
-import { FormItem, getCreateFormAPI } from "@/api";
+import {type FormItem, getCreateFormAPI } from "@/api";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 

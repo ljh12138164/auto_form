@@ -208,18 +208,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { delSubmitFormAPI, getSubmitFormAPI,type TsubmittedItem } from "@/api";
+import { notification } from "@/utils";
 import {
-  Search,
-  Refresh,
   Delete,
-  Download,
   Document,
+  Download,
+  Refresh,
+  Search,
   View,
 } from "@element-plus/icons-vue";
-import { getSubmitFormAPI, TsubmittedItem, delSubmitFormAPI } from "@/api";
-import { notification } from "@/utils";
+import { ElMessageBox } from "element-plus";
+import { onMounted, ref } from "vue";
 
 // 响应式数据
 const loading = ref(false);

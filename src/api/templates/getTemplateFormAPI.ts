@@ -1,4 +1,4 @@
-import { FormItem } from "@/types";
+import {type FormItem } from "@/types";
 import { get } from "@/utils";
 
 export interface TemplateForm {

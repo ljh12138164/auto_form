@@ -73,7 +73,7 @@ import {
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import TemplateLibrary from './components/TemplateLibrary/index.vue'
-import { TemplateForm } from "@/api";
+import {type TemplateForm } from "@/api";
 
 const router = useRouter();
 const activeTab = ref('components');

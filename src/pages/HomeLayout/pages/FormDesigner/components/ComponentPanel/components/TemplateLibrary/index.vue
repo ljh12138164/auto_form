@@ -111,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import { addTemplateCountAPI, getTemplateFormAPI, TemplateForm } from "@/api";
+import { addTemplateCountAPI, getTemplateFormAPI,type TemplateForm } from "@/api";
 import { WarningFilled, ZoomIn } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import { onMounted, ref } from "vue";

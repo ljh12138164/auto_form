@@ -231,7 +231,7 @@ const getValidator = (type: string, customRegex?: string) => {
   }
   
   // 返回验证函数
-  return (rule: any, value: any, callback: any) => {
+  return (_: any, value: any, callback: any) => {
     if (!value) {
       callback()
       return
@@ -288,35 +288,6 @@ const handleSubmit = async () => {
   } finally {
     submitting.value = false
   }
-}
-
-// 获取显示数据（处理选择类型的显示值）
-const getDisplayData = () => {
-  const displayData: Record<string, any> = {}
-  
-  props.formItems.forEach(item => {
-    const value = formData[item.field]
-    
-    if (['select', 'radio'].includes(item.type) && item.options) {
-      const option = item.options.find((opt: any) => opt.value === value)
-      displayData[item.field] = {
-        value,
-        label: option?.label || value
-      }
-    } else if (item.type === 'checkbox' && item.options && Array.isArray(value)) {
-      displayData[item.field] = {
-        value,
-        labels: value.map((v: any) => {
-          const option = item.options.find((opt: any) => opt.value === v)
-          return option?.label || v
-        })
-      }
-    } else {
-      displayData[item.field] = value
-    }
-  })
-  
-  return displayData
 }
 </script>
 

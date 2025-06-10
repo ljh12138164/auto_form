@@ -86,7 +86,7 @@ const router = createRouter({
 // 路由白名单
 const whiteList = ["/login", "/404"];
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _, next) => {
   // 虚拟加载进度-开始
   NProgress.start();
   

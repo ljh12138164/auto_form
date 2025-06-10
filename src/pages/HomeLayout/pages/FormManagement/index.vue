@@ -254,21 +254,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { ElMessage, ElMessageBox } from "element-plus";
-import { getCreateFormAPI,type FormItem } from "@/api";
+import { getCreateFormAPI, type FormItem } from "@/api";
 import {
-  Download,
-  Search,
-  Refresh,
-  Plus,
-  Document,
-  Edit,
-  View,
   Delete,
+  Document,
+  Download,
+  Edit,
   InfoFilled,
+  Plus,
+  Refresh,
+  Search
 } from "@element-plus/icons-vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 
@@ -341,10 +340,6 @@ const handleEdit = (row: FormItem) => {
   router.push(`/home/form-designer/designer/${row.id}`);
 };
 
-// 预览
-const handlePreview = (row: FormItem) => {
-  window.open(`/form-preview/${row.id}`, "_blank");
-};
 
 // 删除
 const handleDelete = async (row: FormItem) => {
