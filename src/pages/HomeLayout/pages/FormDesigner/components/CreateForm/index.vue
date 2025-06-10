@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { delCreateFormAPI, FormItem } from "@/api";
+import { delCreateFormAPI,type FormItem } from "@/api";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { onMounted } from "vue";
 import useCreateStore from "@/stores/modules/createForm";

@@ -197,7 +197,7 @@
 </template>
 
 <script setup lang="ts">
-import { getDashboardStatsAPI, getRecentActivitiesAPI, TRecentActivities } from "@/api";
+import { getDashboardStatsAPI, getRecentActivitiesAPI,type TRecentActivities } from "@/api";
 import {
   DataAnalysis,
   Document,

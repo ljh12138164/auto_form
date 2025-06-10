@@ -257,7 +257,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { getCreateFormAPI, FormItem } from "@/api";
+import { getCreateFormAPI,type FormItem } from "@/api";
 import {
   Download,
   Search,
