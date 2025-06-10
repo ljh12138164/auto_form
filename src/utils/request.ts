@@ -6,10 +6,12 @@ import { getAccessToken, setAccessToken, clearTokens } from './token'
 import { useUserStore } from '@/stores/modules/user'
 // 导入路由实例，用于页面跳转
 import router from '@/router'
-
+const baseURL = import.meta.env.PROD 
+  ? import.meta.env.VITE_APP_BASE_API // 生产环境直接使用域名
+  : import.meta.env.VITE_APP_BASE_API_PROXY; // 开发环境使用代理
 // 创建 axios 实例，配置基础请求参数
 const request = axios.create({
-  baseURL: "/api", // 设置基础 URL 路径为 /api
+  baseURL: baseURL, // 设置基础 URL 路径为 /api
   timeout: 5000, // 设置请求超时时间为 5 秒
   withCredentials: true // 重要：允许携带 Cookie（用于发送 refreshToken）
 })

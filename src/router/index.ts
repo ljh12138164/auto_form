@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 // @ts-ignore
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
@@ -80,7 +80,7 @@ const routes = [
   },
 ];
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes,
 });
 // 路由白名单
