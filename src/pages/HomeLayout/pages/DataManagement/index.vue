@@ -125,11 +125,17 @@
         <el-table-column align="center" label="操作" fixed="right" width="250">
           <template #default="{ row }">
             <div class="flex gap-2 justify-center">
-              <el-button type="primary" size="small" @click="handleView(row)">
+              <el-button
+                link
+                type="primary"
+                size="small"
+                @click="handleView(row)"
+              >
                 <el-icon><View /></el-icon>
                 查看
               </el-button>
               <el-button
+                link
                 type="warning"
                 size="small"
                 @click="handleExportSingle(row)"
@@ -137,7 +143,12 @@
                 <el-icon><Download /></el-icon>
                 导出
               </el-button>
-              <el-button type="danger" size="small" @click="handleDelete(row)">
+              <el-button
+                link
+                type="danger"
+                size="small"
+                @click="handleDelete(row)"
+              >
                 <el-icon><Delete /></el-icon>
                 删除
               </el-button>
@@ -217,14 +228,14 @@ const selectedRows = ref<TsubmittedItem[]>([]);
 const currentRowData = ref<TsubmittedItem | null>(null);
 
 // 搜索表单
-const searchForm = reactive({
+const searchForm = ref({
   title: "",
   submitDate: "",
   // keyword: "",
 });
 const total = ref();
 // 分页
-const pagination = reactive({
+const pagination = ref({
   pageNum: 1,
   pageSize: 10,
 });
@@ -234,7 +245,10 @@ const tableData = ref<TsubmittedItem[]>([]);
 const getSubmitFormData = async () => {
   loading.value = true;
   // 模拟获取数据请求
-  const res = await getSubmitFormAPI({ ...pagination, ...searchForm });
+  const res = await getSubmitFormAPI({
+    ...pagination.value,
+    ...searchForm.value,
+  });
   tableData.value = res.data.submittedDate;
   total.value = res.data.total;
   loading.value = false;
@@ -357,12 +371,12 @@ const handleCloseDetail = () => {
 };
 
 const handleSizeChange = (size: number) => {
-  pagination.pageSize = size;
+  pagination.value.pageSize = size;
   getSubmitFormData();
 };
 
 const handleCurrentChange = (page: number) => {
-  pagination.pageNum = page;
+  pagination.value.pageNum = page;
   getSubmitFormData();
 };
 </script>

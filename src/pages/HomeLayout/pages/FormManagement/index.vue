@@ -64,7 +64,12 @@
 
       <el-table v-loading="loading" :data="tableData" stripe class="w-full">
         <el-table-column align="center" type="index" label="序号" :width="80" />
-        <el-table-column align="center" prop="title" label="表单名称" width="200">
+        <el-table-column
+          align="center"
+          prop="title"
+          label="表单名称"
+          width="200"
+        >
           <template #default="{ row }">
             <div class="flex items-center justify-center">
               <el-icon class="mr-2 text-blue-500"><Document /></el-icon>
@@ -72,10 +77,15 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="表单描述" prop="description" width="300">
+        <el-table-column
+          align="center"
+          label="表单描述"
+          prop="description"
+          width="300"
+        >
           <template #default="{ row }">
             <div class="text-ellipsis-2 text-gray-600">
-              {{ row.description || '暂无描述' }}
+              {{ row.description || "暂无描述" }}
             </div>
           </template>
         </el-table-column>
@@ -118,15 +128,26 @@
         <el-table-column align="center" label="操作" fixed="right">
           <template #default="{ row }">
             <div class="flex gap-2 justify-center">
-              <el-button type="info" size="small" @click="handleDetails(row)">
+              <el-button
+                link
+                type="info"
+                size="small"
+                @click="handleDetails(row)"
+              >
                 <el-icon><InfoFilled /></el-icon>
                 详情
               </el-button>
-              <el-button type="primary" size="small" @click="handleEdit(row)">
+              <el-button
+                link
+                type="primary"
+                size="small"
+                @click="handleEdit(row)"
+              >
                 <el-icon><Edit /></el-icon>
                 编辑
               </el-button>
               <el-button
+                link
                 type="success"
                 size="small"
                 @click="handlePreview(row)"
@@ -134,7 +155,21 @@
                 <el-icon><View /></el-icon>
                 预览
               </el-button>
-              <el-button type="danger" size="small" @click="handleDelete(row)">
+              <el-button
+                link
+                type="waring"
+                size="small"
+                @click="handlePreview(row)"
+              >
+                <el-icon><Download /></el-icon>
+                导出
+              </el-button>
+              <el-button
+                link
+                type="danger"
+                size="small"
+                @click="handleDelete(row)"
+              >
                 <el-icon><Delete /></el-icon>
                 删除
               </el-button>
@@ -219,11 +254,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { getCreateFormAPI, FormItem } from "@/api";
 import {
+  Download,
   Search,
   Refresh,
   Plus,
@@ -337,7 +373,10 @@ const handleCurrentChange = (val: number) => {
 const loadTableData = async () => {
   loading.value = true;
   try {
-    const res = await getCreateFormAPI({ ...searchForm.value, ...pagination.value });
+    const res = await getCreateFormAPI({
+      ...searchForm.value,
+      ...pagination.value,
+    });
     tableData.value = res.data.createData;
     pagination.value.total = res.data.total as number;
   } catch (error) {
@@ -379,7 +418,7 @@ const handleCloseDetails = () => {
 }
 
 pre {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
   line-height: 1.4;
 }
 
