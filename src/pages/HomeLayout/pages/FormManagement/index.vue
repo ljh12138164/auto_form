@@ -75,12 +75,12 @@
           <template #default="{ row }">
             <div class="flex items-center justify-center">
               <el-icon class="mr-2 text-blue-500"><Document /></el-icon>
-              <span class="font-medium">{{ row.name }}</span>
+              <span class="font-medium">{{ row.title }}</span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="表单描述"  />
-        <el-table-column label="表单提交次数" width="120" />
+        <el-table-column align="center" label="表单描述" prop="description" />
+        <el-table-column align="center" label="表单提交次数" width="120" prop="submitCount" />
         <el-table-column
           align="center"
           prop="createTime"
@@ -156,6 +156,7 @@
 import { ref, reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
+import {getCreateFormAPI,FormItem } from "@/api";
 import {
   Search,
   Refresh,
@@ -175,14 +176,13 @@ const loading = ref(false);
 const searchForm = reactive({
   name: "",
   dateRange: [],
-  status: "",
 });
 
 // 表格数据
-const tableData = ref([]);
+const tableData = ref<FormItem[]>([]);
 
 // 分页
-const pagination = reactive({
+const pagination = ref({
   currentPage: 1,
   pageSize: 10,
   total: 0,
@@ -204,7 +204,7 @@ const handleCreateForm = () => {
 
 // 查询
 const handleSearch = () => {
-  pagination.currentPage = 1;
+  pagination.value.currentPage = 1;
   loadTableData();
 };
 
@@ -219,20 +219,20 @@ const handleReset = () => {
 };
 
 // 编辑
-const handleEdit = (row: any) => {
+const handleEdit = (row: FormItem) => {
   router.push(`/form-designer?id=${row.id}`);
 };
 
 // 预览
-const handlePreview = (row: any) => {
+const handlePreview = (row: FormItem) => {
   window.open(`/form-preview/${row.id}`, "_blank");
 };
 
 // 删除
-const handleDelete = async (row: any) => {
+const handleDelete = async (row: FormItem) => {
   try {
     await ElMessageBox.confirm(
-      `确定要删除表单"${row.name}"吗？删除后无法恢复。`,
+      `确定要删除表单"${row.title}"吗？删除后无法恢复。`,
       "删除确认",
       {
         confirmButtonText: "确定删除",
@@ -253,13 +253,13 @@ const handleDelete = async (row: any) => {
 
 // 分页大小改变
 const handleSizeChange = (val: number) => {
-  pagination.pageSize = val;
+  pagination.value.pageSize = val;
   loadTableData();
 };
 
 // 当前页改变
 const handleCurrentChange = (val: number) => {
-  pagination.currentPage = val;
+  pagination.value.currentPage = val;
   loadTableData();
 };
 
@@ -267,42 +267,9 @@ const handleCurrentChange = (val: number) => {
 const loadTableData = async () => {
   loading.value = true;
   try {
-    // 这里调用API获取数据
-    // const response = await getFormList({
-    //   name: searchForm.name,
-    //   dateRange: searchForm.dateRange,
-    //   status: searchForm.status,
-    //   page: pagination.currentPage,
-    //   pageSize: pagination.pageSize
-    // })
-
-    // 模拟数据
-    const mockData = [
-      {
-        id: 1,
-        name: "用户注册表单",
-        createTime: "2024-01-15 10:30:00",
-        updateTime: "2024-01-16 14:20:00",
-        status: "已发布",
-      },
-      {
-        id: 2,
-        name: "产品反馈表单",
-        createTime: "2024-01-14 09:15:00",
-        updateTime: "2024-01-14 16:45:00",
-        status: "草稿",
-      },
-      {
-        id: 3,
-        name: "客户满意度调查",
-        createTime: "2024-01-13 16:20:00",
-        updateTime: "2024-01-13 18:30:00",
-        status: "已发布",
-      },
-    ];
-
-    tableData.value = mockData;
-    pagination.total = 3;
+    const res = await getCreateFormAPI();
+    tableData.value = res.data.createData;
+    pagination.value.total = res.data.total as number;
   } catch (error) {
     ElMessage.error("加载数据失败");
   } finally {
