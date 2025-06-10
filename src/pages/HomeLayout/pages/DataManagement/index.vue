@@ -86,7 +86,7 @@
         class="w-full"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column type="index" label="id" width="80" />
+        <el-table-column type="index" label="序号" width="80" />
         <el-table-column
           align="center"
           prop="title"
