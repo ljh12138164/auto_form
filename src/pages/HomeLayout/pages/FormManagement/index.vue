@@ -199,7 +199,7 @@ const formatTime = (dateTime: string) => {
 
 // 新增表单
 const handleCreateForm = () => {
-  router.push("/form-designer");
+  router.push("/home/form-designer");
 };
 
 // 查询

@@ -1,7 +1,7 @@
 <template>
   <div class="form-config">
     <el-form label-width="100px" size="default" style="font-size: 16px;">
-      <el-form-item label="表单标题">
+      <el-form-item label="表单名称">
         <el-input
           v-model="modelValue.title"
         />

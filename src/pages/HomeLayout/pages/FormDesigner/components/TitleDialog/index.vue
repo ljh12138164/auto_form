@@ -1,15 +1,15 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="修改表单标题"
+    title="修改表单名称"
     width="500px"
     :close-on-click-modal="false"
   >
     <el-form :model="localFormConfig" label-width="100px">
-      <el-form-item label="表单标题" required>
+      <el-form-item label="表单名称" required>
         <el-input
           v-model="localFormConfig.title"
-          placeholder="请输入表单标题"
+          placeholder="请输入表单名称"
           maxlength="50"
           show-word-limit
         />
@@ -65,12 +65,12 @@ const handleCancel = () => {
 const confirmTitle = () => {
   // @ts-ignore
   if (!localFormConfig.value.title?.trim()) {
-    ElMessage.warning("请输入表单标题");
+    ElMessage.warning("请输入表单名称");
     return;
   }
   // 只有确认时才更新父组件的数据
   formData.value = localFormConfig.value;
   visible.value = false;
-  ElMessage.success("表单标题设置成功");
+  ElMessage.success("表单名称设置成功");
 };
 </script>

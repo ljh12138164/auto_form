@@ -59,10 +59,10 @@
           label-width="80px"
           @submit.prevent="handleCreateForm"
         >
-          <el-form-item label="表单标题" required>
+          <el-form-item label="表单名称" required>
             <el-input
               v-model="newFormData.title"
-              placeholder="请输入表单标题"
+              placeholder="请输入表单名称"
               maxlength="50"
               show-word-limit
               @keyup.enter="handleCreateForm"
@@ -120,7 +120,7 @@ const newFormData = reactive({
 // 创建新表单
 const handleCreateForm = async () => {
   if (!newFormData.title.trim()) {
-    ElMessage.warning("请输入表单标题");
+    ElMessage.warning("请输入表单名称");
     return;
   }
   try {

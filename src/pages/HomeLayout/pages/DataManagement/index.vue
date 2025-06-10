@@ -6,12 +6,12 @@
         <!-- 标题搜索 -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2"
-            >表单标题</label
+            >表单名称</label
           >
           <el-input
             @keydown.enter="getSubmitFormData"
             v-model="searchForm.title"
-            placeholder="请输入表单标题"
+            placeholder="请输入表单名称"
             style="width: 200px"
           />
         </div>
@@ -90,7 +90,7 @@
         <el-table-column
           align="center"
           prop="title"
-          label="表单标题"
+          label="表单名称"
           width="250"
         >
           <template #default="{ row }">
