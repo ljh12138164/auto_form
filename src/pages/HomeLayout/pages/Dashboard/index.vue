@@ -113,10 +113,10 @@
                   ><Files
                 /></el-icon>
                 <span class="block text-sm text-gray-700 font-medium"
-                  >模板管理</span
+                  >代码生成</span
                 >
                 <span class="block text-xs text-gray-500 mt-1"
-                  >管理表单模板</span
+                  >快速生成代码</span
                 >
               </div>
               <div
@@ -243,7 +243,7 @@ const createForm = () => {
 };
 
 const manageTemplates = () => {
-  router.push("/home/template-center");
+  router.push("/home/code-generator");
 };
 
 const viewReports = () => {
