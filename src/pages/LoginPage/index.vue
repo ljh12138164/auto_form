@@ -108,8 +108,8 @@ const isLogin = ref(true);
 
 // 表单数据
 const formData = reactive({
-  username: "admin",
-  password: "123456",
+  username: "",
+  password: "",
   confirmPassword: "",
   email: "",
 });

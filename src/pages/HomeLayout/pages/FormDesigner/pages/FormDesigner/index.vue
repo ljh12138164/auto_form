@@ -211,7 +211,7 @@ let pendingNavigation: any = null;
 const selectedItemId = ref<string | null>(null);
 const selectedItem = computed(() => {
   return (
-    formItems.value.find((item) => item.id === selectedItemId.value) || null
+    formItems?.value?.find((item) => item.id === selectedItemId.value) || null
   );
 });
 // 导入JSON数据

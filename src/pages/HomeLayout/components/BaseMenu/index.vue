@@ -97,7 +97,7 @@ const activeIndex = computed(() => {
   }
 
   // 处理子路由情况 - 查找匹配的菜单项
-  const matchedItem = menuItems.value.find((item) => {
+  const matchedItem = menuItems?.value?.find((item) => {
     // 精确匹配
     if (item.path === currentPath) {
       return true;
@@ -124,7 +124,7 @@ const handleSelect = (index: string) => {
     return;
   }
 
-  const selectedItem = menuItems.value.find((item) => item.index === index);
+  const selectedItem = menuItems?.value?.find((item) => item.index === index);
   if (selectedItem) {
     const targetPath = "/home" + selectedItem.path;
 
