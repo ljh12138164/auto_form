@@ -77,7 +77,7 @@
     </div>
 
     <!-- 画布主体区域 -->
-    <div class="canvas-body flex-1 p-8 bg-gray-50">
+    <div style="overflow-y: auto;" class="canvas-body flex-1 p-8 bg-gray-50">
       <!-- 表单画布容器，支持拖拽放置 -->
       <div
         class="form-canvas bg-white rounded-lg shadow-sm border-2 border-dashed border-gray-300 min-h-[600px] p-8 mx-auto max-w-4xl"
@@ -89,7 +89,7 @@
       >
         <!-- 空状态提示：当没有表单项时显示 -->
         <div
-          v-if="formItems.length === 0"
+          v-if="!formItems || formItems.length === 0"
           class="empty-state text-center py-32"
         >
           <!-- 大号加号图标 -->
@@ -184,45 +184,40 @@ const handleDragOver = (event: DragEvent) => {
 
 // 拖拽放置事件处理函数
 const handleDrop = (event: DragEvent) => {
-  event.preventDefault(); // 阻止默认行为
-  isDragOver.value = false; // 重置拖拽悬停状态
-  // 获取拖拽传递的组件数据
+  event.preventDefault();
+  isDragOver.value = false;
+  
   const componentData = event.dataTransfer?.getData("application/json");
   if (componentData) {
     try {
-      // 解析 JSON 数据得到组件配置
       const component = JSON.parse(componentData);
-      // 创建新的表单项对象
+      
+      // 安全获取当前表单项数量
+      const currentLength = formItems.value?.length || 0;
+      
       const newItem = {
-        // 生成唯一ID：时间戳 + 随机字符串
         id: `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        type: component.type, // 组件类型
-        label: component.label, // 组件标签
-        // 生成字段名：field_ + 序号
-        // @ts-ignore
-        field: `field_${formItems?.value?.length + 1}`,
-        // 设置占位符文本
-        placeholder:
-          component.defaultProps?.placeholder || `请输入${component.label}`,
-        required: false, // 默认非必填
-        defaultValue: "", // 默认值为空
-        props: { ...component.defaultProps }, // 复制默认属性
-        options: component.options || [], // 选项数组（用于选择类组件）
+        type: component.type,
+        label: component.label,
+        field: `field_${currentLength + 1}_${Date.now()}`, // 添加时间戳避免重复
+        placeholder: component.defaultProps?.placeholder || `请输入${component.label}`,
+        required: false,
+        defaultValue: "",
+        props: { ...component.defaultProps },
+        options: component.options || [],
         labelWidth: "",
       };
-      // 创建新的表单项数组（不修改原数组）
-      // const newFormItems = [...props.formItems, newItem]
-      const newFormItems = [...formItems.value].concat(newItem);
+      
+      // 安全的数组操作
+      const currentItems = formItems.value || [];
+      const newFormItems = [...currentItems, newItem];
       formItems.value = newFormItems;
+      
       console.log("newFormItems", newFormItems);
-      props.saveToHistory()
-      // 向父组件发射更新事件
-      // 选中新添加的表单项
+      props.saveToHistory();
       emits("selectItem", newItem);
-      // 显示成功消息
       ElMessage.success(`已添加 ${component.label} 组件`);
     } catch (error) {
-      // 错误处理：解析失败时的处理
       console.error("解析拖拽数据失败:", error);
       ElMessage.error("添加组件失败");
     }
