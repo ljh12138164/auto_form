@@ -130,7 +130,7 @@
 
     <!-- 预览区域 -->
     <div class="form-preview" v-if="selectedForm">
-      <el-card>
+      <el-card style="height:100%;">
         <template #header>
           <span>表单预览</span>
         </template>
