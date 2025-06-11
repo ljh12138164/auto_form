@@ -67,10 +67,19 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+        },
+      },
     },
     define: {
       __VUE_OPTIONS_API__: false,
       __VUE_PROD_DEVTOOLS__: false,
+    },
+    esbuild: {
+      drop: isDev ? [] : ['console', 'debugger'],
     },
   };
 });
