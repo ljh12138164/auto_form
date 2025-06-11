@@ -49,10 +49,7 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
     },
     build: {
-      // 生产环境构建配置
-      outDir: 'dist',
-      sourcemap: false, // 生产环境不生成 sourcemap
-      minify: 'esbuild', // 使用 esbuild 压缩
+      minify: 'terser',
       rollupOptions: {
         output: {
           manualChunks(_) {
