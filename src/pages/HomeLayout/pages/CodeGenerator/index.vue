@@ -130,7 +130,7 @@
 
     <!-- 预览区域 -->
     <div class="form-preview" v-if="selectedForm">
-      <el-card style="height:100%;">
+      <el-card style="height: 100%">
         <template #header>
           <span>表单预览</span>
         </template>
@@ -333,10 +333,79 @@ const onFormChange = () => {
 // 复制代码
 const copyCode = async () => {
   try {
-    await navigator.clipboard.writeText(generatedCode.value);
-    ElMessage.success("代码已复制到剪贴板");
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(generatedCode.value);
+      ElMessage.success("代码已复制到剪贴板");
+    } else {
+      // 降级方案：使用传统的 document.execCommand
+      fallbackCopyTextToClipboard(generatedCode.value);
+    }
   } catch (error) {
-    ElMessage.error("复制失败");
+    console.error("复制失败:", error);
+    // 如果现代 API 失败，尝试降级方案
+    fallbackCopyTextToClipboard(generatedCode.value);
+  }
+};
+
+// 降级复制方案
+const fallbackCopyTextToClipboard = (text: string) => {
+  try {
+    // 创建临时文本域
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+
+    // 设置样式，使其不可见
+    textArea.style.position = "fixed";
+    textArea.style.top = "-9999px";
+    textArea.style.left = "-9999px";
+    textArea.style.opacity = "0";
+    textArea.style.pointerEvents = "none";
+
+    // 添加到 DOM
+    document.body.appendChild(textArea);
+
+    // 选中文本
+    textArea.focus();
+    textArea.select();
+    textArea.setSelectionRange(0, text.length);
+    // 执行复制命令
+    const successful = document.execCommand("copy");
+    // 清理 DOM
+    document.body.removeChild(textArea);
+
+    if (successful) {
+      ElMessage.success("代码已复制到剪贴板");
+    } else {
+      throw new Error("execCommand failed");
+    }
+  } catch (error) {
+    console.error("降级复制方案也失败:", error);
+    ElMessage.error("复制失败，请手动选择并复制代码");
+    // 最后的降级方案：选中代码区域
+    selectCodeText();
+  }
+};
+
+// 选中代码文本的辅助函数
+const selectCodeText = () => {
+  try {
+    // 假设代码显示在某个元素中，需要根据实际情况调整选择器
+    const codeElement =
+      document.querySelector(".code-display") ||
+      document.querySelector("pre") ||
+      document.querySelector("code");
+
+    if (codeElement) {
+      const range = document.createRange();
+      range.selectNodeContents(codeElement);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+
+      ElMessage.info("代码已选中，请按 Ctrl+C 复制");
+    }
+  } catch (error) {
+    console.error("选中代码失败:", error);
   }
 };
 
@@ -357,8 +426,7 @@ const downloadCode = () => {
   a.download = fileName;
   a.click();
   URL.revokeObjectURL(url);
-
-  ElMessage.success(`文件 ${fileName} 已下载`);
+  ElMessage.success(`文件已下载`);
 };
 
 // 组件挂载时获取数据
