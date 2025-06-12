@@ -61,8 +61,16 @@ const refreshToken = async (): Promise<string> => {
     clearTokens() // 清除本地存储的 accessToken
     const userStore = useUserStore()
     userStore.logout() // 调用 store 的登出方法
-    router.push('/login') // 跳转到登录页面
-    throw error // 重新抛出错误
+    
+    // 延迟跳转，避免在请求处理过程中立即跳转
+    setTimeout(() => {
+      router.push('/login') // 跳转到登录页面
+    }, 100)
+    
+    // 创建一个特殊的错误标识，表示需要登出
+    const logoutError = new Error('REFRESH_TOKEN_FAILED')
+    logoutError.name = 'LOGOUT_REQUIRED'
+    throw logoutError // 重新抛出错误
   }
 }
 // 配置请求拦截器：在每个请求发送前执行
@@ -91,6 +99,7 @@ request.interceptors.response.use(
   async (error) => {
     // 获取原始请求配置
     const originalRequest = error.config
+    
     // 检查是否为 401 未授权错误，且不是重试请求，且不是刷新 token 的请求
     if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url?.includes('refresh-token')) {
       // 如果当前正在刷新 token，将请求加入等待队列
@@ -103,7 +112,10 @@ request.interceptors.response.use(
           originalRequest.headers.Authorization = `Bearer ${token}`
           return request(originalRequest)
         }).catch(err => {
-          // token 刷新失败时，拒绝当前请求
+          // 检查是否为登出错误，如果是则不重试
+          if (err.name === 'LOGOUT_REQUIRED') {
+            return Promise.reject(new Error('用户已登出，请重新登录'))
+          }
           return Promise.reject(err)
         })
       }
@@ -124,9 +136,17 @@ request.interceptors.response.use(
         // 重新发送原始请求
         return request(originalRequest)
       } catch (refreshError) {
-        // token 刷新失败时，处理队列中的请求并传入错误
+        // 检查是否为登出错误
+        // @ts-ignore
+        if (refreshError.name === 'LOGOUT_REQUIRED') {
+          // 处理队列中的请求，传入登出错误
+          processQueue(refreshError, null)
+          // 直接返回登出错误，不再重试
+          return Promise.reject(new Error('用户已登出，请重新登录'))
+        }
+        
+        // 其他刷新错误的处理
         processQueue(refreshError, null)
-        // 拒绝原始请求
         return Promise.reject(refreshError)
       } finally {
         // 无论成功失败，都重置刷新标志
