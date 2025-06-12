@@ -103,6 +103,7 @@ import { reactive, ref } from "vue";
 import CreateForm from "../../components/CreateForm/index.vue";
 import useCreateStore from "@/stores/modules/createForm";
 import { useRouter } from "vue-router";
+import { notification } from "@/utils";
 const router = useRouter()
 const createStore = useCreateStore()
 // 弹窗控制
@@ -134,11 +135,11 @@ const handleCreateForm = async () => {
     newFormData.title = "";
     newFormData.description = "";
     await createStore.getCreateFormData()
-    ElMessage.success("表单创建成功");
+    notification("表单创建成功","", "success");
     // 跳转到表单设计器
     goForm(createStore.createFormInfo[0].id);
   } catch (error) {
-    ElMessage.error("创建失败，请重试");
+    notification("创建失败，请重试","", "error");
     console.error(error);
   }
 };

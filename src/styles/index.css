@@ -1,1 +1,73 @@
 @import "tailwindcss";
+
+/* ElMessage 全局样式重写 */
+.el-message {
+  min-width: 380px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: none;
+  font-weight: 500;
+  padding: 18px 24px;
+}
+
+/* 成功消息样式 */
+.el-message--success {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-left: 4px solid #10b981;
+  color: #065f46;
+}
+
+/* 错误消息样式 */
+.el-message--error {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border-left: 4px solid #ef4444;
+  color: #991b1b;
+}
+
+/* 警告消息样式 */
+.el-message--warning {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-left: 4px solid #f59e0b;
+  color: #92400e;
+}
+
+/* 信息消息样式 */
+.el-message--info {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-left: 4px solid #3b82f6;
+  color: #1e40af;
+}
+
+/* 消息图标样式 */
+.el-message__icon {
+  font-size: 18px;
+  margin-right: 12px;
+}
+
+/* 消息内容样式 */
+.el-message__content {
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* 关闭按钮样式 */
+.el-message__closeBtn {
+  font-size: 16px;
+  color: #6b7280;
+  transition: color 0.2s ease;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.el-message__closeBtn:hover {
+  color: #374151;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .el-message {
+    min-width: 320px;
+    margin: 0 16px;
+  }
+}
