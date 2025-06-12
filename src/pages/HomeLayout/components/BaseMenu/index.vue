@@ -88,12 +88,15 @@ const activeIndex = computed(() => {
 
   // 如果是 /home 根路径，默认为 dashboard
   if (currentPath === "/home") {
-    console.log("当前路径是 /home");
     currentPath = "/dashboard";
-    console.log("修改后的路径是：", currentPath);
-  } else if (currentPath.startsWith("/home/")) {
+  } else if (currentPath.startsWith("/home/")&&currentPath !== "/home/") {
     // 提取 /home/ 后面的部分
     currentPath = currentPath.replace("/home", "");
+  }else if(currentPath === "/home/") {
+    console.log("home");
+    
+    currentPath = "/dashboard";
+    router.replace("/home"+currentPath);
   }
 
   // 处理子路由情况 - 查找匹配的菜单项
