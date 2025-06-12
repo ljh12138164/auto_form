@@ -26,7 +26,6 @@
         :model="formData"
         :rules="formRules"
         class="space-y-6"
-        @keyup.enter="handleSubmit"
       >
         <el-form-item prop="username">
           <el-input
